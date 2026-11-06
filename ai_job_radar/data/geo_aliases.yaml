@@ -1,0 +1,240 @@
+# Extra aliases on top of GeoNames + pycountry. Keys are matched case-insensitively.
+countries:
+  uk: GB
+  u.k.: GB
+  united kingdom: GB
+  great britain: GB
+  britain: GB
+  england: GB
+  scotland: GB
+  wales: GB
+  northern ireland: GB
+  usa: US
+  u.s.: US
+  u.s.a.: US
+  us: US
+  united states: US
+  united states of america: US
+  america: US
+  uae: AE
+  emirates: AE
+  u.a.e.: AE
+  south korea: KR
+  korea: KR
+  republic of korea: KR
+  north korea: KP
+  russia: RU
+  vietnam: VN
+  viet nam: VN
+  czech republic: CZ
+  czechia: CZ
+  holland: NL
+  the netherlands: NL
+  turkey: TR
+  türkiye: TR
+  turkiye: TR
+  iran: IR
+  syria: SY
+  laos: LA
+  bolivia: BO
+  venezuela: VE
+  tanzania: TZ
+  taiwan: TW
+  hong kong: HK
+  hong kong sar: HK
+  macau: MO
+  macao: MO
+  ivory coast: CI
+  cote d'ivoire: CI
+  côte d'ivoire: CI
+  swaziland: SZ
+  eswatini: SZ
+  burma: MM
+  myanmar: MM
+  slovak republic: SK
+  slovakia: SK
+  brunei: BN
+  cape verde: CV
+  east timor: TL
+  timor-leste: TL
+  macedonia: MK
+  north macedonia: MK
+  moldova: MD
+  palestine: PS
+  vatican: VA
+  bahamas: BS
+  gambia: GM
+  congo: CG
+  drc: CD
+  dr congo: CD
+  democratic republic of the congo: CD
+  republic of ireland: IE
+  bharat: IN
+  philippines: PH
+  the philippines: PH
+  kingdom of saudi arabia: SA
+  ksa: SA
+  saudi: SA
+  new zealand: NZ
+  aotearoa: NZ
+  prc: CN
+  mainland china: CN
+  people's republic of china: CN
+  south africa: ZA
+  rsa: ZA
+  deutschland: DE
+  españa: ES
+  brasil: BR
+  méxico: MX
+  mexico: MX
+  singapore: SG
+  bangladesh: BD
+  sri lanka: LK
+  nepal: NP
+  pakistan: PK
+  australia: AU
+  canada: CA
+  ireland: IE
+  israel: IL
+  japan: JP
+  kenya: KE
+  nigeria: NG
+  egypt: EG
+  ghana: GH
+  indonesia: ID
+  malaysia: MY
+  thailand: TH
+  argentina: AR
+  colombia: CO
+  chile: CL
+  peru: PE
+  switzerland: CH
+  sweden: SE
+  norway: NO
+  denmark: DK
+  finland: FI
+  poland: PL
+  portugal: PT
+  spain: ES
+  italy: IT
+  france: FR
+  germany: DE
+  belgium: BE
+  austria: AT
+  greece: GR
+  hungary: HU
+  romania: RO
+  ukraine: UA
+  qatar: QA
+  kuwait: KW
+  oman: OM
+  bahrain: BH
+  jordan: JO
+  lebanon: LB
+  morocco: MA
+  tunisia: TN
+  ethiopia: ET
+  uganda: UG
+  rwanda: RW
+  india: IN
+
+# Short forms and nicknames for places. Value is [canonical city name, ISO2 country].
+cities:
+  ncr: [Delhi, IN]
+  delhi ncr: [Delhi, IN]
+  delhi/ncr: [Delhi, IN]
+  delhi-ncr: [Delhi, IN]
+  national capital region: [Delhi, IN]
+  new delhi: [New Delhi, IN]
+  gurgaon: [Gurugram, IN]
+  bangalore: [Bengaluru, IN]
+  bengaluru urban: [Bengaluru, IN]
+  bangalore urban: [Bengaluru, IN]
+  bangalore rural: [Bengaluru, IN]
+  bombay: [Mumbai, IN]
+  calcutta: [Kolkata, IN]
+  madras: [Chennai, IN]
+  pondicherry: [Puducherry, IN]
+  trivandrum: [Thiruvananthapuram, IN]
+  vizag: [Visakhapatnam, IN]
+  blr: [Bengaluru, IN]
+  hyd: [Hyderabad, IN]
+  bby: [Mumbai, IN]
+  bay area: [San Francisco Bay Area, US]
+  sf bay area: [San Francisco Bay Area, US]
+  san francisco bay area: [San Francisco Bay Area, US]
+  silicon valley: [San Francisco Bay Area, US]
+  sf: [San Francisco, US]
+  nyc: [New York, US]
+  new york city: [New York, US]
+  new york: [New York, US]
+  washington dc: [Washington, US]
+  washington d.c.: [Washington, US]
+  dc: [Washington, US]
+  la: [Los Angeles, US]
+  gta: [Toronto, CA]
+  greater toronto area: [Toronto, CA]
+  greater london: [London, GB]
+  randstad: [Amsterdam, NL]
+  tel aviv-yafo: [Tel Aviv, IL]
+  tel aviv: [Tel Aviv, IL]
+  sg: [Singapore, SG]
+  dubai: [Dubai, AE]
+  abu dhabi: [Abu Dhabi, AE]
+  riyadh: [Riyadh, SA]
+  kl: [Kuala Lumpur, MY]
+  hcmc: [Ho Chi Minh City, VN]
+  ho chi minh: [Ho Chi Minh City, VN]
+  saigon: [Ho Chi Minh City, VN]
+
+# Words that mean "open to the whole world" when they appear in a remote location string.
+global_words: [anywhere, worldwide, global, globally, international, any location, any country, all countries, no location restriction]
+
+# Demonyms help decide whether a "Remote" job is open to candidates in the target country.
+demonyms:
+  IN: [india, indian]
+  US: [usa, united states, u.s., american, americans]
+  GB: [uk, united kingdom, british, england]
+  CA: [canada, canadian]
+  AU: [australia, australian]
+  DE: [germany, german]
+  FR: [france, french]
+  NL: [netherlands, dutch]
+  SG: [singapore, singaporean]
+  AE: [uae, emirates, emirati, dubai]
+  BR: [brazil, brazilian]
+  MX: [mexico, mexican]
+  AR: [argentina, argentine]
+  ES: [spain, spanish]
+  IT: [italy, italian]
+  PT: [portugal, portuguese]
+  PL: [poland, polish]
+  IE: [ireland, irish]
+  SE: [sweden, swedish]
+  CH: [switzerland, swiss]
+  JP: [japan, japanese]
+  KR: [korea, korean]
+  CN: [china, chinese]
+  PK: [pakistan, pakistani]
+  BD: [bangladesh, bangladeshi]
+  LK: [sri lanka, sri lankan]
+  PH: [philippines, filipino]
+  ID: [indonesia, indonesian]
+  VN: [vietnam, vietnamese]
+  MY: [malaysia, malaysian]
+  NG: [nigeria, nigerian]
+  KE: [kenya, kenyan]
+  ZA: [south africa, south african]
+  EG: [egypt, egyptian]
+  IL: [israel, israeli]
+  TR: [turkey, türkiye, turkish]
+  NZ: [new zealand, kiwi]
+
+# Region words per continent code (GeoNames continent codes).
+continents:
+  AS: [asia, apac, asia pacific, asia-pacific, south asia, southeast asia, south east asia, middle east, mena, gcc, ist timezone, indian standard time, ist hours]
+  EU: [europe, emea, european, eu, cet, cest, european timezone]
+  NA: [north america, americas, us/canada, usa/canada, north american, est, pst, cst, us timezones, us hours]
+  SA: [latam, latin america, south america, americas]
+  AF: [africa, emea, mea, african]
+  OC: [oceania, apac, anz, australia/new zealand, aest]

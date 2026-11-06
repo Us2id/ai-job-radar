@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-job-radar"
+version = "0.1.0"
+description = "Find LLM / AI / ML job openings posted in the last N days, flag fake and ghost postings, and export an Excel workbook."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["jobs", "ai", "machine-learning", "scraper", "excel", "india"]
+dependencies = [
+  "python-jobspy>=1.4",
+  "requests>=2.31",
+  "openpyxl>=3.1",
+  "pyyaml>=6",
+  "rapidfuzz>=3",
+  "python-dateutil>=2.8",
+  "pycountry>=24",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+ai-job-radar = "ai_job_radar.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["ai_job_radar*"]
+
+[tool.setuptools.package-data]
+ai_job_radar = ["data/*.yaml", "data/*.json.gz", "data/seeds/*.yaml", "data/seeds/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

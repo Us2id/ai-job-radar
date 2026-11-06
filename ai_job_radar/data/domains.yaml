@@ -1,0 +1,132 @@
+# Domain taxonomy used by --domain. Keys and aliases are accepted; several can be comma-separated.
+# A word that is not listed here is matched literally (as a word prefix) against the title, the
+# description and the company's industry, so "--domain mechanical" works even without an entry.
+# 'strong' patterns are specific to the domain (one hit in the title/industry is enough, two in
+# the description); 'weak' patterns also appear in other contexts and only add half-weight.
+none: [tech, technology, any, all, general, software, it, "*"]
+
+domains:
+  healthcare:
+    aliases: [health, medical, medicine, healthtech, health tech, clinical, hospital, pharma, pharmaceutical, biotech, biotechnology, life sciences, lifesciences, medtech, diagnostics, digital health, biomedical, genomics]
+    strong: ['\bhealth ?care\b', '\bclinical\b', '\bhospitals?\b', '\bpatients?\b', '\bpharma(ceutical)?s?\b', '\bbiotech', '\blife sciences?\b', '\bmedtech\b', '\bdiagnos(tic|is)', '\bradiolog', '\bgenomics?\b', '\bdrug (discovery|development)\b', '\bEHR\b', '\bEMR\b', '\bHIPAA\b', '\btelemedicine\b', '\bbiomedical\b', '\bhealth ?tech\b', '\bmental health\b', '\boncolog', '\bcardio', '\bpatholog', '\bmedical (imaging|devices?|records?|data|ai)\b', '\bclinicians?\b', '\bphysicians?\b', '\bmedicine\b', '\bhealth (systems?|insurance|outcomes|plans?)\b', '\bcare delivery\b']
+    weak: ['\bdoctors?\b', '\bmedical\b', '\bhealth\b', '\bpayers?\b', '\bproviders?\b', '\bFDA\b', '\bwellness\b']
+  finance:
+    aliases: [fintech, financial, banking, bank, payments, lending, trading, investment, wealth, credit, capital markets, quant]
+    strong: ['\bfintech\b', '\bbanking\b', '\blending\b', '\bloans?\b', '\bcredit (risk|scoring|cards?|underwriting)', '\btrading\b', '\bcapital markets?\b', '\bhedge fund\b', '\basset management\b', '\bwealth management\b', '\bfraud detection\b', '\bAML\b|\bKYC\b', '\bunderwriting\b', '\bbrokerage\b', '\bfinancial (services|institutions?|products?|markets?)\b', '\bneobank\b', '\bUPI\b', '\bremittance', '\bpayments? (platform|gateway|infrastructure|network|rails)\b', '\bmortgages?\b', '\binvestment (bank|management|platform)']
+    weak: ['\bpayments?\b', '\bbanks?\b', '\binvest', '\bwealth\b', '\bcredit\b', '\bfinanc', '\bportfolio\b']
+  insurance:
+    aliases: [insurtech, actuarial, claims, underwriting]
+    strong: ['\binsur(ance|er|tech)\b', '\bactuar', '\bunderwrit', '\bpolicyholder', '\breinsurance\b']
+    weak: ['\bclaims\b', '\bpremiums?\b']
+  climate:
+    aliases: [environment, environmental, sustainability, sustainable, cleantech, clean tech, climate tech, climatetech, carbon, green, esg, renewable, renewables, solar, wind, weather, earth observation, geospatial, nature, conservation, water, ecology]
+    strong: ['\bclimate\b', '\bsustainab', '\bcarbon\b', '\bemissions?\b', '\brenewable', '\bsolar\b', '\bwind (energy|farm|power|turbine)', '\bclean ?tech\b', '\bESG\b', '\bnet[- ]zero\b', '\bweather\b', '\bearth observation\b', '\bremote sensing\b', '\bsatellite imagery\b', '\benvironmental\b', '\bdecarboni', '\bgreen (energy|tech|hydrogen|building)', '\bconservation\b', '\bbiodiversity\b', '\bmeteorolog', '\bhydrolog', '\bwildfire', '\bair quality\b', '\bwater (quality|resources|management)\b', '\becolog']
+    weak: ['\bbatter(y|ies)\b', '\belectric vehicles?\b', '\bEVs?\b', '\bgrid\b', '\bagri', '\bforest', '\bocean', '\bflood', '\bdisaster', '\bgeospatial\b', '\bGIS\b', '\benergy\b']
+  energy:
+    aliases: [oil, gas, oil and gas, utilities, utility, power, nuclear, hydrogen, mining, petroleum]
+    strong: ['\boil (and|&) gas\b', '\bpetroleum\b', '\butilit(y|ies)\b', '\bpower (plant|generation|utility|sector)\b', '\bnuclear\b', '\bhydrogen\b', '\bmining\b', '\benergy (trading|storage|efficiency|sector|company|transition|markets?)\b', '\brefiner']
+    weak: ['\bgrid\b', '\benergy\b', '\bpower\b']
+  mechanical:
+    aliases: [manufacturing, industrial, mechanical engineering, cad, cae, simulation, machinery, factory, industry 4.0, engineering design, product engineering, hardware engineering]
+    strong: ['\bmechanical\b', '\bmanufactur', '\bindustrial (automation|iot|equipment|engineering|machinery|robots?)\b', '\bCAD\b|\bCAE\b|\bFEA\b|\bCFD\b', '\bdigital twin', '\bfactor(y|ies)\b|\bshop floor\b', '\bpredictive maintenance\b', '\bPLC\b|\bSCADA\b', '\bindustry 4\.0\b', '\bmachinery\b', '\bSolidWorks\b|\bCATIA\b|\bANSYS\b|\bAutoCAD\b', '\bMES\b', '\bproduction lines?\b']
+    weak: ['\bsimulation\b', '\bindustrial\b', '\bautomation\b', '\brobotic', '\bsupply chain\b', '\bquality (control|inspection)\b', '\bthermal\b|\bfluid dynamics\b', '\bmaterials?\b', '\bprocess engineering\b', '\bhardware\b']
+  automotive:
+    aliases: [auto, cars, mobility, autonomous driving, self-driving, adas, ev]
+    strong: ['\bautomotive\b', '\bautonomous (driving|vehicles?)\b', '\bself-driving\b', '\bADAS\b', '\bOEMs?\b', '\btelematics\b', '\bride[- ]?(hailing|sharing)\b', '\bcar (makers?|manufacturers?)\b']
+    weak: ['\bvehicles?\b', '\bfleet\b', '\bmobility\b', '\bEVs?\b', '\bcars?\b', '\bdriv(ers?|ing)\b']
+  aerospace:
+    aliases: [aviation, space, defense, defence, satellite, drones, uav]
+    strong: ['\baerospace\b', '\baviation\b', '\baircraft\b', '\bairlines?\b', '\bsatellites?\b', '\bspace(craft|flight| tech| systems| industry)\b', '\bavionics\b', '\bmissile', '\bISRO\b|\bNASA\b|\bDRDO\b', '\blaunch vehicles?\b']
+    weak: ['\bdefen[cs]e\b', '\bdrones?\b|\bUAVs?\b', '\bradar\b']
+  agriculture:
+    aliases: [agri, agritech, agtech, farming, food, foodtech, crop]
+    strong: ['\bagri', '\bfarm', '\bcrops?\b', '\bagronom', '\birrigation\b', '\bfertili[sz]er', '\blivestock\b', '\bdairy\b', '\bfisher', '\bfood (tech|security|supply|processing|systems?)\b']
+    weak: ['\bsoil\b', '\bseeds?\b', '\bfood\b']
+  education:
+    aliases: [edtech, ed tech, learning, teaching, school, university, students]
+    strong: ['\bedtech\b|\bed-tech\b', '\beducation(al)?\b', '\blearners?\b', '\bstudents?\b', '\bschools?\b', '\bteachers?\b', '\btutoring\b', '\bcurricul', '\bK-?12\b', '\be-?learning\b']
+    weak: ['\bcourses?\b', '\buniversit', '\bupskilling\b', '\btraining\b']
+  legal:
+    aliases: [law, legaltech, legal tech, compliance, regulatory, contracts]
+    strong: ['\blegal\b', '\blaw (firms?|practice)\b', '\blawyers?\b', '\battorney', '\bcontracts? (review|analysis|management)\b', '\blitigation\b', '\be-?discovery\b', '\bparalegal\b']
+    weak: ['\bcompliance\b', '\bregulator', '\bcontracts?\b']
+  retail:
+    aliases: [ecommerce, e-commerce, commerce, shopping, marketplace, consumer, cpg, fmcg, fashion, grocery, quick commerce]
+    strong: ['\bretail', '\be-?commerce\b', '\bmarketplace\b', '\bshoppers?\b', '\bconsumer (goods|products|brands?)\b', '\bCPG\b|\bFMCG\b', '\bmerchandis', '\bgrocery\b', '\bquick commerce\b', '\bfashion\b', '\bapparel\b', '\bomni-?channel\b', '\bpoint of sale\b|\bPOS\b']
+    weak: ['\bcatalog(ue)?\b', '\bcart\b', '\bcheckout\b', '\bsellers?\b', '\bcustomers?\b']
+  logistics:
+    aliases: [supply chain, shipping, delivery, transportation, transport, freight, warehouse]
+    strong: ['\blogistics\b', '\bsupply chain', '\bfreight\b', '\bshipping\b', '\bwarehous', '\bfulfil(l)?ment\b', '\blast[- ]mile\b', '\broute optimi[sz]ation\b', '\btrucking\b', '\bcourier\b', '\bmaritime\b']
+    weak: ['\bdelivery\b', '\bfleet\b', '\bports?\b', '\btransport']
+  telecom:
+    aliases: [telecommunications, networks, 5g, wireless, isp]
+    strong: ['\btelecom', '\btelco\b', '\b5G\b|\b6G\b|\bLTE\b', '\bRAN\b', '\bbroadband\b', '\bISP\b', '\bnetwork operators?\b']
+    weak: ['\bwireless\b', '\bcarriers?\b', '\bnetwork']
+  gaming:
+    aliases: [games, game, esports, video games]
+    strong: ['\bgaming\b', '\bgame (studio|engine|design|dev|development)', '\besports\b', '\bunity\b|\bunreal\b', '\bmobile games?\b', '\bvideo games?\b']
+    weak: ['\bgames?\b', '\bplayers?\b']
+  media:
+    aliases: [entertainment, advertising, adtech, ad tech, martech, marketing tech, publishing, news, music, video, streaming, content]
+    strong: ['\bmedia\b', '\bentertainment\b', '\badvertis', '\bad ?tech\b', '\bmar ?tech\b', '\bpublish', '\bnewsroom\b|\bjournalis', '\bstreaming\b', '\bOTT\b', '\bad (targeting|ranking|auction)']
+    weak: ['\bmusic\b', '\bvideo\b', '\bcreators?\b', '\bcampaigns?\b', '\bcontent\b']
+  cybersecurity:
+    aliases: [security, infosec, cyber, fraud, trust and safety, identity]
+    strong: ['\bcyber ?security\b', '\binfosec\b', '\bthreat (detection|intelligence|hunting)\b', '\bmalware\b', '\bSOC\b', '\bSIEM\b', '\bvulnerabilit', '\bpenetration test', '\bidentity (and access|management)\b', '\btrust (and|&) safety\b', '\bzero trust\b', '\bintrusion\b']
+    weak: ['\bfraud\b', '\bendpoint\b', '\bsecurity\b']
+  government:
+    aliases: [public sector, govtech, civic, policy, govt]
+    strong: ['\bgovernment\b', '\bpublic sector\b', '\bgov ?tech\b', '\bcivic\b', '\bpublic policy\b', '\bministry\b', '\bmunicipal', '\bsmart city\b', '\bpublic services?\b']
+    weak: ['\bcitizens?\b', '\bpolicy\b']
+  hr:
+    aliases: [hrtech, hr tech, recruiting tech, talent, workforce, people analytics, staffing tech]
+    strong: ['\bHR ?tech\b', '\bhuman resources\b', '\brecruit(ing|ment) (platform|software|tech)', '\btalent (platform|intelligence|marketplace)\b', '\bpeople analytics\b', '\bhiring platform\b', '\bpayroll\b', '\bemployee (engagement|experience)\b']
+    weak: ['\bworkforce\b', '\btalent\b', '\brecruit']
+  realestate:
+    aliases: [real estate, proptech, property, housing, construction tech]
+    strong: ['\breal estate\b', '\bprop ?tech\b', '\bmortgage', '\bhousing\b', '\blandlords?\b', '\btenants?\b']
+    weak: ['\bpropert(y|ies)\b', '\brental', '\bbrokers?\b']
+  travel:
+    aliases: [hospitality, tourism, hotels, airlines, booking]
+    strong: ['\btravel\b', '\bhospitality\b', '\btourism\b', '\bhotels?\b', '\bairlines?\b', '\bitinerar']
+    weak: ['\bbooking', '\bguests?\b', '\btrips?\b']
+  robotics:
+    aliases: [robots, robot, drones, embodied ai, humanoid]
+    strong: ['\brobotics?\b', '\bhumanoid\b', '\bembodied\b', '\bSLAM\b', '\bmotion planning\b', '\bROS\b', '\bwarehouse robots?\b']
+    weak: ['\bmanipulat', '\bautonomous (systems?|robots?)\b', '\bdrones?\b', '\bactuators?\b']
+  semiconductor:
+    aliases: [chips, chip, hardware, silicon, eda, vlsi, asic, fpga, embedded]
+    strong: ['\bsemiconductor', '\bVLSI\b', '\bASIC\b', '\bFPGA\b', '\bEDA\b', '\bRTL\b', '\bSoC\b', '\bsilicon\b', '\bchips?\b', '\bNPU\b', '\bhardware accelerators?\b']
+    weak: ['\bembedded\b', '\bfirmware\b', '\bverification\b', '\bGPU\b', '\bhardware\b']
+  research:
+    aliases: [academia, academic, lab, university research, phd, postdoc, institute]
+    strong: ['\bacademi', '\bpostdoc', '\bPhD\b', '\bpublications?\b', '\bpeer[- ]reviewed\b', '\bNeurIPS\b|\bICML\b|\bICLR\b|\bACL\b|\bCVPR\b|\bEMNLP\b', '\bresearch (lab|institute|group)\b', '\bfaculty\b']
+    weak: ['\bgrant', '\bresearch\b']
+  consulting:
+    aliases: [consultancy, advisory, professional services, it services, services]
+    strong: ['\bconsulting\b', '\bconsultanc', '\badvisory\b', '\bprofessional services\b', '\bIT services\b', '\bsystem integrator', '\bstaff augmentation\b']
+    weak: ['\bclients?\b', '\bengagements?\b']
+  devtools:
+    aliases: [developer tools, cloud, infrastructure, infra, saas, platform, enterprise software, b2b, open source, database, data infrastructure, observability]
+    strong: ['\bdeveloper (tools?|platform|experience)\b', '\bdev ?tools?\b', '\bcloud (platform|infrastructure|provider|native)\b', '\bSaaS\b', '\bopen[- ]source\b', '\bobservability\b', '\bdata (platform|infrastructure|warehouse|lake)\b', '\bkubernetes\b', '\bdeveloper[- ]first\b', '\benterprise software\b']
+    weak: ['\bB2B\b', '\bAPIs?\b', '\bdatabases?\b', '\bcloud\b']
+  social:
+    aliases: [social media, consumer apps, community, dating, creator economy, messaging]
+    strong: ['\bsocial (media|network|platform|app)\b', '\bconsumer (app|internet|product)\b', '\bcreator economy\b', '\bdating\b', '\bmessaging\b', '\bfeed ranking\b', '\bcontent moderation\b', '\buser[- ]generated\b']
+    weak: ['\bcommunity\b', '\bcreators?\b']
+  nonprofit:
+    aliases: [non-profit, ngo, social impact, development, humanitarian, charity, philanthropy, public good, ai for good]
+    strong: ['\bnon-?profit\b', '\bNGO\b', '\bsocial impact\b', '\bhumanitarian\b', '\bcharit', '\bphilanthrop', '\bpublic good\b', '\bAI for (good|social good)\b', '\bdevelopment sector\b', '\bglobal south\b']
+    weak: ['\bunderserved\b', '\blow[- ]income\b', '\bimpact[- ]driven\b', '\bmission[- ]driven\b']
+  construction:
+    aliases: [infrastructure projects, civil, buildings, built environment, contech]
+    strong: ['\bconstruction\b', '\bcivil engineering\b', '\bbuilt environment\b', '\bBIM\b', '\bcontractors?\b', '\bcon ?tech\b']
+    weak: ['\bbuildings?\b', '\binfrastructure projects?\b']
+  sports:
+    aliases: [fitness, wellness, sport, athletics]
+    strong: ['\bsports?\b', '\bfitness\b', '\bathlet', '\bcricket\b|\bfootball\b|\bbasketball\b', '\bfantasy sports\b']
+    weak: ['\bwearables?\b', '\bwellness\b']
+  chemistry:
+    aliases: [materials, chemicals, molecules, drug design, cheminformatics, materials science]
+    strong: ['\bchemistr', '\bchemicals?\b', '\bmolecul', '\bmaterials? (science|discovery|informatics)\b', '\bcheminformatics\b', '\bcatalys', '\bpolymer', '\bprotein (design|folding|structure)\b']
+    weak: ['\bmaterials?\b']

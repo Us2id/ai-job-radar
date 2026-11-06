@@ -1,0 +1,184 @@
+# Signals used to flag fake, scam and ghost postings. Weights are added to a base score of 50
+# and the result is clamped to 0..100. Patterns are case-insensitive regexes applied to the
+# description (and, where noted, the title or company name). Nothing here is country-specific
+# by design: Indian, US and European wording sits side by side.
+
+scam:
+  - id: asks_for_money
+    weight: -45
+    hard_cap: 30
+    reason: "Asks for money (registration / training fee, deposit, kit, investment)"
+    patterns:
+      - 'registration (fee|charge|amount|cost)'
+      - '(training|course|certification|onboarding|processing|verification|activation|joining|document|background[- ]check) (fee|charge|charges|cost|amount)'
+      - 'security deposit'
+      - 'refundable (fee|deposit|amount|charge)'
+      - '(laptop|equipment|kit|uniform|id card) (deposit|fee|charge|cost)'
+      - 'investment (required|of|needed)'
+      - 'one[- ]time (fee|payment|charge)'
+      - 'nominal (fee|charge|amount)'
+      - 'pay (a|the)? ?(small|nominal|one[- ]time|registration)? ?(fee|amount|charge)'
+      - '(upi|paytm|gpay|google pay|phonepe|zelle|cash ?app|venmo|paypal|western union|gift cards?|bitcoin|crypto) (payment|transfer|fee)'
+      - 'pay(ment)? (via|through|by) (upi|paytm|gpay|phonepe|zelle|cash ?app|venmo|gift card|crypto)'
+      - '(send|transfer|deposit) (rs\.?|₹|inr|\$|usd|€|£)\s?\d'
+      - 'buy (your own|the) (laptop|equipment|software|training)'
+  - id: messaging_app_contact
+    weight: -25
+    reason: "Contact via WhatsApp / Telegram / Signal instead of a company channel"
+    patterns:
+      - '(contact|reach|message|msg|ping|text|dm|call|connect|apply|send|share|whatsapp|wa)\W{0,3}(us|me|hr|recruiter|now)?\W{0,12}(on|via|at|through|to|:)\W{0,6}whats ?app'
+      - 'whats ?app\W{0,12}(number|no\.?|num|me|us|at|:|\+?\d[\d\s-]{7,})'
+      - '(on|via|through|join|contact|message)\W{0,12}telegram'
+      - 'telegram (group|channel|link|me|us|id|number|:)'
+      - 'wa\.me/'
+      - 't\.me/'
+      - '(text|message|ping|dm) (me|us) (on|at|via)'
+  - id: free_email_apply
+    weight: -15
+    reason: "Applications go to a free email address"
+    patterns:
+      - '[\w.+-]+@(gmail|yahoo|hotmail|outlook|live|rediffmail|ymail|aol|protonmail|proton|icloud|mail)\.(com|co\.in|in|co\.uk|me|ru)'
+  - id: easy_money_pitch
+    weight: -25
+    reason: "Earn-per-day / no interview / no experience pitch"
+    patterns:
+      - 'earn (up ?to|upto|rs\.?|₹|inr|\$|usd|€|£)'
+      - '(per|a|every) (day|week) (income|earning|salary|payout)'
+      - 'no interview'
+      - 'no (experience|skills?|qualification) (required|needed|necessary)'
+      - '(weekly|daily) (payout|payment|income|earning)'
+      - 'part[- ]time (job|work|income).{0,60}(home|mobile|phone|anywhere)'
+      - 'work from (home|mobile|phone).{0,60}(earn|income|per day|daily)'
+      - 'copy[- ]?paste (job|work|task)'
+      - 'form[- ]filling'
+      - 'ad[- ]posting'
+      - 'typing (job|work)'
+      - 'captcha'
+      - 'survey (job|work|filling)'
+      - 'like and share'
+      - 'reviews? (writing|posting) job'
+      - 'guaranteed (salary|income|placement|job|earning)'
+  - id: personal_data_upfront
+    weight: -20
+    reason: "Asks for ID or bank details before any interview"
+    patterns:
+      - '(send|share|submit|provide|upload) .{0,40}(aadha?a?r|pan card|passport (copy|scan)|driver.?s licen[cs]e|ssn|social security|national insurance|bank (account|details|statement)|iban|cancelled cheque|otp)'
+      - '\botp\b.{0,30}(share|send|provide)'
+  - id: pressure_tactics
+    weight: -10
+    reason: "Pressure tactics (hurry, limited seats, apply today)"
+    patterns:
+      - '\bhurry\b'
+      - 'limited (seats|slots|vacancies|positions) (left|available|only)'
+      - 'offer (expires|valid) (today|within)'
+      - 'apply (now|fast|immediately) (before|or miss)'
+      - 'first come,? first serve'
+  - id: unrealistic_pay
+    weight: -15
+    reason: "Pay looks too good for the stated experience"
+    patterns:
+      - '(\d{2}) ?(lakh|lac|lpa).{0,30}(fresher|no experience|0 ?(-|to) ?1 ?years?)'
+      - '(\$|usd) ?\d{3},?\d{3}.{0,30}(no experience|entry[- ]level|fresher)'
+      - 'unlimited (income|earning)'
+
+# Signals that a posting may be a ghost job (open with no intent to hire soon).
+ghost:
+  evergreen_patterns:
+    - 'always (hiring|looking|recruiting)'
+    - 'talent (pool|community|network|pipeline)'
+    - 'future (opportunit|opening|roles?|positions?)'
+    - 'pipeline (of|for) (candidates|talent)'
+    - 'general application'
+    - 'open application'
+    - 'evergreen'
+    - 'expression of interest'
+    - 'speculative application'
+    - 'join our talent'
+    - 'not (an|a) (active|open|specific) (role|position|opening)'
+    - 'we may not be actively hiring'
+    - 'keep your (profile|resume|cv) on file'
+  evergreen_weight: -12
+  days_open_thresholds: [[30, -8], [45, -12], [60, -20], [90, -30]]
+  reposted_weight: -12
+  many_locations_threshold: 5
+  many_locations_weight: -10
+  not_on_company_board_weight: -15
+
+# Company-name signals.
+company:
+  generic_patterns:
+    - '^confidential'
+    - 'client of'
+    - '^(a |an )?(leading|reputed|top|well[- ]known|fortune \d+) (mnc|company|it company|firm|client)'
+    - 'not disclosed'
+    - 'undisclosed'
+    - '^hidden$'
+    - '^company name'
+    - '^hiring (for|company)'
+    - '^(mnc|it company|private company)$'
+  generic_weight: -12
+  agency_patterns:
+    - '\bconsultanc(y|ies)\b'
+    - '\bconsultants?\b'
+    - '\bstaffing\b'
+    - '\brecruit(ers?|ing|ment)\b'
+    - '\bplacements?\b'
+    - '\bmanpower\b'
+    - '\bhr (solutions?|services?|consult)'
+    - '\btalent (solutions?|partners?|acquisition|search)'
+    - '\boutsourc'
+    - '\bhead ?hunt'
+    - '\bsearch partners?\b'
+    - '\bworkforce\b'
+    - '\bjob (portal|consultan)'
+    - '\bhiring (partner|agency)'
+    - '\bpeople (solutions|services)\b'
+    - '\btalentpro|\btalentedge|\bmanpowergroup|\brandstad|\badecco|\bkelly services|\bteamlease|\bquess|\bexperis|\bhays\b|\brobert half|\bmichael page|\bhudson\b'
+  agency_weight: -6
+  brand_impersonation_weight: -20
+  big_brands:
+    - google
+    - microsoft
+    - amazon
+    - meta
+    - apple
+    - netflix
+    - openai
+    - anthropic
+    - nvidia
+    - infosys
+    - tcs
+    - tata consultancy
+    - wipro
+    - hcl
+    - accenture
+    - deloitte
+    - ibm
+    - oracle
+    - flipkart
+    - reliance
+    - jio
+    - paytm
+    - samsung
+    - adobe
+    - salesforce
+    - uber
+    - tesla
+
+# Positive signals.
+positive:
+  on_ats_or_board: 30
+  has_req_id: 6
+  trusted_date: 5
+  known_company: 6
+  domain_age_years: [[5, 10], [2, 6], [1, 2]]
+  domain_too_new_days: [[90, -30], [180, -20], [365, -10]]
+  company_website_matches_apply_domain: 6
+  linkedin_page: 3
+  size_known: 3
+
+levels:
+  - [75, "Likely genuine"]
+  - [55, "Looks fine"]
+  - [35, "Check before applying"]
+  - [0, "Suspicious"]

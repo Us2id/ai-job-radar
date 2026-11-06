@@ -1,0 +1,172 @@
+# Relevance taxonomy for LLM / AI / ML roles. Edit freely; all patterns are case-insensitive regexes.
+
+# Terms sent to the aggregator lanes (LinkedIn, Indeed, Naukri, Glassdoor, Google Jobs, Adzuna, Jooble).
+# Each term costs one search per lane, so the default list is deliberately compact.
+search_terms:
+  - machine learning engineer
+  - machine learning
+  - artificial intelligence
+  - AI engineer
+  - data scientist
+  - LLM
+  - generative AI
+  - NLP
+  - computer vision
+  - deep learning
+  - MLOps
+  - applied scientist
+  - AI research scientist
+
+# Added with --deep.
+deep_search_terms:
+  - AI/ML engineer
+  - GenAI engineer
+  - AI researcher
+  - research engineer
+  - ML platform engineer
+  - RAG
+  - prompt engineer
+  - speech recognition
+  - recommendation systems
+  - reinforcement learning
+  - AI product manager
+  - AI solutions architect
+  - data science
+  - ML scientist
+  - machine learning intern
+  - AI intern
+  - conversational AI
+  - AI agents
+
+# A title matching any of these gets the pattern's weight as its title score (max wins).
+title_include:
+  - { re: '\b(machine|deep|reinforcement|statistical|federated|representation) learning\b', w: 100 }
+  - { re: '\bartificial intelligence\b', w: 100 }
+  - { re: '(?<![A-Za-z])A\.?I\.?(?![A-Za-z])', w: 92 }
+  - { re: '(?<![A-Za-z])ML(?![A-Za-z])', w: 92 }
+  - { re: '\bLLMs?\b|\blarge language model', w: 100 }
+  - { re: '\bgen(erative)?[ -]?ai\b|\bgenai\b', w: 100 }
+  - { re: '\bNLP\b|\bnatural language\b|\bNLU\b|\bNLG\b', w: 100 }
+  - { re: '\bcomputer vision\b|\bvision (engineer|scientist|researcher)\b|(?<![A-Za-z])CV (engineer|scientist|researcher)', w: 100 }
+  - { re: '\bdata scien(ce|tist)', w: 88 }
+  - { re: '\bapplied scientist\b', w: 100 }
+  - { re: '\bresearch (scientist|engineer|associate|fellow|intern)\b', w: 80 }
+  - { re: '\b(ML|LLM|AI)[ -]?ops\b|\bmlops\b|\bllmops\b', w: 100 }
+  - { re: '\bRAG\b|retrieval[- ]augmented', w: 96 }
+  - { re: '\bprompt engineer', w: 95 }
+  - { re: '\bfoundation model', w: 100 }
+  - { re: '\bspeech\b|\bASR\b|\bTTS\b|\bvoice (ai|assistant)\b', w: 85 }
+  - { re: '\bconversational\b|\bchatbot\b|\bdialog(ue)? systems?\b', w: 85 }
+  - { re: '\brecommend(ation|er)s? (system|engine|platform|algorithm)', w: 88 }
+  - { re: '\bagentic\b|\bai agents?\b|\bmulti-?agent\b', w: 100 }
+  - { re: '\bneural\b|\btransformers?\b|\bdiffusion\b', w: 85 }
+  - { re: '\bmodel (training|serving|deployment|inference|optimization)\b', w: 88 }
+  - { re: '\bperception\b|\bautonomous (driving|vehicles?|systems?)\b|\bself-driving\b', w: 82 }
+  - { re: '\bGPU\b|\bCUDA\b|\binference (engineer|optimization)\b', w: 82 }
+  - { re: '\bML (infra|infrastructure|platform|systems)\b', w: 100 }
+  - { re: '\bsearch (relevance|ranking|science)\b|\branking (engineer|scientist)\b|\bpersonali[sz]ation\b', w: 82 }
+  - { re: '\bquant(itative)? (researcher|analyst|scientist)\b', w: 60 }
+  - { re: '\b(data )?annotat|\blabel(l)?ing\b|\bAI trainer\b|\bdata trainer\b|\bAI (rater|evaluator|tutor)\b', w: 55 }
+  - { re: '\bML\b|\bAI\b', w: 90 }
+
+# Titles matching these are dropped (not an engineering / science / product role in AI).
+title_exclude:
+  - '\bsales\b'
+  - '\bmarketing\b'
+  - '\brecruit'
+  - '\btalent acquisition\b'
+  - '\baccount (executive|manager|director)\b'
+  - '\bbusiness development\b'
+  - '\bSDR\b|\bBDR\b'
+  - '\bcustomer (success|support|service)\b'
+  - '\bcontent (writer|creator)\b|\bcopywriter\b'
+  - '\btelecall|\btelesales\b'
+  - '\bdata entry\b|\btyping\b|\bform filling\b'
+  - '\bHR\b|\bhuman resources\b|\bpayroll\b'
+  - '\baccountant\b|\bbookkeep'
+  - '\bgraphic design|\bvideo editor\b|\banimator\b'
+  - '\bsocial media\b|\binfluencer\b'
+  - '\bgo[- ]to[- ]market\b|\bgrowth (manager|marketing|lead|management)\b|\buser growth\b|\bdemand gen'
+  - '\bQA (engineer|analyst|lead)\b(?!.*(AI|ML|model))|\btest(ing)? engineer\b(?!.*(AI|ML|model))'
+  - '\bpartnerships?\b|\balliances?\b'
+  - '\bevent (manager|coordinator)\b'
+  - '\breceptionist\b|\boffice (manager|assistant)\b|\badministrative\b'
+  - '\bdelivery (boy|partner|executive)\b|\bdriver\b'
+  - '\bteacher\b|\btutor\b|\bfaculty\b|\blecturer\b|\bprofessor\b'
+  - '\bnurse\b|\bphysician\b|\bdoctor\b'
+  - '\bchef\b|\bcook\b|\bhousekeep'
+
+# Description terms for titles that are not explicit (e.g. "Software Engineer").
+# 'hard' terms are specific to ML work; 'soft' terms appear in boilerplate too ("we use AI").
+# A generic title needs at least two distinct hard terms (or one hard term plus several soft ones)
+# to pass the default relevance threshold of 50.
+desc_hard:
+  - '\bpytorch\b'
+  - '\btensorflow\b'
+  - '\bjax\b'
+  - '\bkeras\b'
+  - '\bscikit[- ]learn\b|\bsklearn\b'
+  - '\bxgboost\b|\blightgbm\b|\bcatboost\b'
+  - '\bhugging ?face\b'
+  - '\btransformers?\b'
+  - '\blangchain\b|\bllamaindex\b|\bllama[- ]index\b|\blanggraph\b|\bcrewai\b|\bautogen\b'
+  - '\bopenai\b|\banthropic\b|\bclaude\b|\bgemini\b|\bgpt-?\d|\bllama ?\d|\bmistral\b'
+  - '\bfine[- ]?tun'
+  - '\bembeddings?\b'
+  - '\bvector (db|database|store|search)\b|\bpinecone\b|\bweaviate\b|\bmilvus\b|\bfaiss\b|\bqdrant\b|\bchroma(db)?\b|\bpgvector\b'
+  - '\bRAG\b|retrieval[- ]augmented'
+  - '\bLLMs?\b|\blarge language model'
+  - '\bBERT\b|\bGPT\b|\bT5\b'
+  - '\bdiffusion\b|\bstable diffusion\b|\bGANs?\b'
+  - '\bCNNs?\b|\bRNNs?\b|\bLSTMs?\b'
+  - '\bmodel (training|inference|serving|deployment|evaluation)\b'
+  - '\bMLflow\b|\bkubeflow\b|\bsagemaker\b|\bvertex ai\b|\bbedrock\b|\bazure (ml|openai)\b|\bdatabricks\b'
+  - '\bCUDA\b|\bGPUs?\b|\bTPUs?\b'
+  - '\bdeep learning\b'
+  - '\bcomputer vision\b|\bOpenCV\b|\bYOLO\b|\bimage (classification|segmentation|recognition)\b'
+  - '\bNLP\b|\bnatural language\b'
+  - '\breinforcement learning\b|\bRLHF\b'
+  - '\bfeature engineering\b'
+  - '\brecommendation (system|engine)\b|\branking model'
+  - '\bspaCy\b|\bNLTK\b'
+  - '\bwhisper\b|\bspeech (recognition|synthesis)\b|\bASR\b|\bTTS\b'
+  - '\bagentic\b|\bai agents?\b|\bmulti-?agent\b|\btool[- ]calling\b|\bfunction calling\b'
+  - '\bprompt engineering\b|\bprompting\b'
+  - '\bvLLM\b|\bTensorRT\b|\btriton\b|\bONNX\b|\bquanti[sz]ation\b'
+  - '\bMLOps\b|\bLLMOps\b'
+  - '\bneural network'
+  - '\bdata scien(ce|tist)\b'
+desc_soft:
+  - '\bmachine learning\b'
+  - '\bgenerative ai\b|\bgenai\b'
+  - '\bartificial intelligence\b'
+  - '(?<![A-Za-z])AI(?![A-Za-z])'
+  - '(?<![A-Za-z])ML(?![A-Za-z])'
+  - '\btime[- ]series forecasting\b|\banomaly detection\b'
+  - '\bA/B test'
+  - '\bstatistical model'
+  - '\bexperiment(ation)? platform\b'
+  - '\bpredictive (model|analytics)'
+  - '\bdata[- ]driven\b'
+
+# Role family from the title, first match wins.
+role_families:
+  data-science: '\bdata scien|\banalytics\b|\bstatistic|\bquant\b|\bdecision scien'
+  research: '\bresearch(er)?\b|\bscientist\b|\bapplied scientist\b|\bfellow\b'
+  mlops-platform: '\bml ?ops\b|\bllm ?ops\b|\bml (infra|infrastructure|platform|systems)\b|\bai infra|\binference\b|\bmodel serving\b|\bgpu\b|\bplatform engineer\b|\bsre\b|\bdevops\b'
+  ml-engineering: '\bengineer|\bdeveloper\b|\bprogrammer\b|\barchitect\b|\bsde\b|\bswe\b'
+  applied-solutions: '\bsolutions?\b|\bforward deployed\b|\bconsultant\b|\bcustomer engineer\b|\bimplementation\b|\bpre-?sales\b|\bspecialist\b'
+  product: '\bproduct (manager|owner|lead)\b|\bprogram manager\b|\bproject manager\b|\bpm\b'
+  leadership: '\bhead of\b|\bdirector\b|\bvp\b|\bvice president\b|\bchief\b|\bcto\b|\bmanager\b|\blead\b|\bprincipal\b'
+  annotation: '\bannotat|\blabel(l)?ing\b|\btrainer\b|\brater\b|\bevaluator\b|\btutor\b'
+  analyst: '\banalyst\b'
+
+# Seniority from the title (then description hints), first match wins.
+seniority:
+  intern: '\bintern(ship)?\b|\btrainee\b|\bapprentice\b|\bco-?op\b'
+  junior: '\bjunior\b|\bjr\.?\b|\bassociate\b|\bentry[- ]level\b|\bgraduate\b|\bfresher\b|\bnew grad\b|\b(i|1)\b$'
+  director+: '\bdirector\b|\bvp\b|\bvice president\b|\bhead of\b|\bchief\b|\bcto\b|\bpartner\b'
+  manager: '\bmanager\b|\bengineering lead\b|\bteam lead\b'
+  staff+: '\bstaff\b|\bprincipal\b|\bdistinguished\b|\bfellow\b|\barchitect\b'
+  lead: '\blead\b|\btech lead\b'
+  senior: '\bsenior\b|\bsr\.?\b|\b(iii|3|iv|4)\b$|\bexpert\b'
