@@ -140,6 +140,8 @@ or list URLs in `~/.ai-job-radar/boards.yaml` (`- {name: X, url: https://boards.
   being hammered; Wikimedia in particular throttles anonymous clients hard, so company sizes fill in over
   a few runs rather than all at once.
 - Boards that no longer exist (HTTP 404) are skipped for 30 days and listed once in the Run log.
+- Workable's board API has an hourly quota: on back-to-back runs for several countries, some Workable boards
+  answer 429 and are skipped for that run (the Run log lists them); they come back on the next run.
 - Job-site scraping (LinkedIn, Indeed, Glassdoor, Naukri) is best effort: these sites rate-limit and
   block. Employer boards, remote boards and the keyed APIs are the stable part.
 - Company size is an estimate from whichever source had it; the *Size source* column says which.
