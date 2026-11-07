@@ -11,6 +11,7 @@ import yaml
 
 from ..models import Job
 from ..text import domain_of, normalize_title, root_domain
+from .textmodel import fraud_probability
 
 FREE_MAIL = re.compile(r"(?i)@(gmail|yahoo|hotmail|outlook|live|rediffmail|ymail|aol|protonmail|proton|icloud|mail)\.")
 
@@ -150,6 +151,18 @@ def score_all(jobs: list[Job], now: datetime) -> None:
         if anti_fraud_notice:
             score += int(pos.get("anti_fraud_notice", 0))
             notes.append("carries an anti-fraud notice (says it never asks for fees or personal data)")
+
+        # ---- learned text signal
+        tm = c.get("text_model") or {}
+        if tm and (j.description or "") and len(j.description) > 120:
+            p = fraud_probability(f"{j.title}\n{j.description[:6000]}")
+            if p is not None:
+                j.extra["scam_text_prob"] = round(p, 3)
+                for thr, w in sorted(tm.get("thresholds", []), key=lambda x: -x[0]):
+                    if p >= thr:
+                        score += int(w)
+                        flags.append(f"{tm.get('reason', 'text resembles known scam postings')} (model {p:.2f})")
+                        break
 
         # ---- company name signals
         name = j.company or ""

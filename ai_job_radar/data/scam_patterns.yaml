@@ -179,6 +179,11 @@ positive:
   size_known: 3
   anti_fraud_notice: 2
 
+# A small text classifier trained on the EMSCAD fake-job dataset (see pipeline/textmodel.py).
+text_model:
+  thresholds: [[0.95, -25], [0.85, -12]]
+  reason: "Text resembles known scam postings"
+
 levels:
   - [75, "Likely genuine"]
   - [55, "Looks fine"]

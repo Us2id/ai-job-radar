@@ -19,7 +19,11 @@ from ..sources.base import RunContext
 from ..sources.boards import classify_board_error, fetch_boards
 from ..sources.jobspy_source import fetch_jobspy
 from ..sources.remote_boards import fetch_remoteok, fetch_remotive
+from ..sources.hn_hiring import fetch_hn_hiring
+from ..sources.instahyre import fetch_instahyre
+from ..sources.internshala import fetch_internshala
 from ..text import clean_company_name, extract_experience, fix_mojibake, normalize_company
+from .salary import parse_salary
 from .dedup import merge_jobs
 from .enrich import Enricher
 from .excel import ABOUT, write_workbook
@@ -28,7 +32,7 @@ from .store import Store, default_home
 from .verify import poster_type, score_all
 from .window import apply_window
 
-LANES = ["ats", "jobspy", "remote", "google", "adzuna", "jooble"]
+LANES = ["ats", "jobspy", "remote", "instahyre", "internshala", "hn", "google", "adzuna", "jooble"]
 
 
 @dataclass
@@ -198,7 +202,7 @@ def run(cfg: RunConfig) -> RunSummary:
     # ------------------------------------------------------------------ fetch all lanes concurrently
     lane_fns = {
         "ats": fetch_boards, "jobspy": fetch_jobspy, "google": fetch_google_jobs, "adzuna": fetch_adzuna,
-        "jooble": fetch_jooble,
+        "jooble": fetch_jooble, "instahyre": fetch_instahyre, "internshala": fetch_internshala, "hn": fetch_hn_hiring,
     }
     results = []
     if cfg.from_raw:
@@ -212,7 +216,7 @@ def run(cfg: RunConfig) -> RunSummary:
             st.errors += [f"(original) {e}" for e in s.get("errors", [])]
         results.append(SourceResult([job_from_dict(d) for d in saved["jobs"]], st))
         log(f"[pipeline] replaying {len(results[0].jobs)} raw postings from {cfg.from_raw}")
-    with ThreadPoolExecutor(max_workers=5) as ex:
+    with ThreadPoolExecutor(max_workers=8) as ex:
         futs = {}
         for lane in ([] if cfg.from_raw else cfg.lanes):
             if lane == "remote":
@@ -296,6 +300,10 @@ def run(cfg: RunConfig) -> RunSummary:
     # ------------------------------------------------------------------ merge duplicates, remember, window
     merged = merge_jobs(kept)
     for j in merged:
+        sal = parse_salary(j.salary)
+        if sal:
+            j.extra["salary_annual_inr"] = sal["annual_inr_mid"]
+            j.extra["salary_annual"] = f"{sal['currency']} {sal['annual_low']:,.0f}-{sal['annual_high']:,.0f}" if sal["annual_low"] != sal["annual_high"] else f"{sal['currency']} {sal['annual_low']:,.0f}"
         store.touch_job(j, now)
         apply_window(j, now, cfg.days)
     store.commit()
@@ -364,7 +372,9 @@ def run(cfg: RunConfig) -> RunSummary:
         "Source notes": [f"{s.name}: fetched={s.fetched} time={s.seconds:.0f}s {s.note}".strip() for s in stats] + rate_notes,
         "Errors": error_summary or ["none"], "Database": str(store.path),
     }
-    write_workbook(out, in_window, flagged, list(companies.values()), run_log, ABOUT)
+    new_this_run = [j for j in in_window if j.times_seen == 1]
+    counts["new_this_run"] = len(new_this_run)
+    write_workbook(out, in_window, flagged, list(companies.values()), run_log, ABOUT, new_this_run=new_this_run)
     store.save_run_jobs(run_id, merged)
     store.finish_run(run_id, counts, errors, str(out))
     store.close()

@@ -14,7 +14,7 @@ def _add_run_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--country", default=os.environ.get("AI_JOB_RADAR_COUNTRY", "India"), help="country name or ISO code; 'any' for no country filter (default India)")
     p.add_argument("--keywords", default="", help="extra search terms, comma-separated")
     p.add_argument("--deep", action="store_true", help="use the longer search-term list (more requests)")
-    p.add_argument("--sources", default=",".join(["ats", "jobspy", "remote", "google", "adzuna", "jooble"]), help="lanes to run: ats,jobspy,remote,google,adzuna,jooble")
+    p.add_argument("--sources", default=",".join(["ats", "jobspy", "remote", "instahyre", "internshala", "hn", "google", "adzuna", "jooble"]), help="lanes to run: ats,jobspy,remote,instahyre,internshala,hn,google,adzuna,jooble")
     p.add_argument("--out", help="output .xlsx path")
     p.add_argument("--db", help="SQLite path (default ~/.ai-job-radar/radar.sqlite)")
     p.add_argument("--results-per-term", type=int, default=200, help="results per search term per job site (default 200)")
@@ -134,6 +134,19 @@ def cmd_review_import(a: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_schedule(a: argparse.Namespace) -> int:
+    from . import schedule
+
+    if a.action == "install":
+        hh, mm = (a.at or "08:00").split(":")
+        print(schedule.install(int(hh), int(mm), a.run_args or []))
+    elif a.action == "uninstall":
+        print(schedule.uninstall())
+    else:
+        print(schedule.status())
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="ai-job-radar", description="Recent LLM / AI / ML job openings, with fake and ghost posting flags, exported to Excel.")
     sub = p.add_subparsers(dest="cmd")
@@ -165,6 +178,11 @@ def main(argv: list[str] | None = None) -> int:
     pi.add_argument("--db")
     pi.add_argument("--out")
     pi.set_defaults(fn=cmd_review_import)
+    ps = sub.add_parser("schedule", help="run every day at a fixed time (macOS launchd, or a cron line on Linux)")
+    ps.add_argument("action", choices=["install", "uninstall", "status"])
+    ps.add_argument("--at", default="08:00", help="HH:MM local time (default 08:00)")
+    ps.add_argument("run_args", nargs=argparse.REMAINDER, help="arguments passed to `run`, e.g. -- --days 1 --country India")
+    ps.set_defaults(fn=cmd_schedule)
     args = p.parse_args(argv)
     if not args.cmd:
         # Bare invocation: behave like `run` with defaults.

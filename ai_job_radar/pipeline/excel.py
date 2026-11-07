@@ -68,6 +68,8 @@ COLUMNS = [
     ("Experience", 12, lambda j: j.experience, "text"),
     ("Employment type", 14, lambda j: j.employment_type, "text"),
     ("Salary (as listed)", 20, lambda j: j.salary, "text"),
+    ("Salary / year (parsed)", 18, lambda j: j.extra.get("salary_annual"), "text"),
+    ("Salary / year INR approx", 14, lambda j: j.extra.get("salary_annual_inr"), "int"),
     ("AI relevance", 10, lambda j: j.relevance_score, "int"),
     ("Matched AI terms", 30, lambda j: ", ".join(j.relevance_terms), "wrap"),
     ("Domain tags", 22, lambda j: ", ".join(j.domain_tags), "text"),
@@ -77,6 +79,7 @@ COLUMNS = [
     ("Size source", 12, lambda j: j.company_size_source, "text"),
     ("Domain registered", 14, lambda j: j.domain_registered if j.domain_registered != "unknown" else None, "text"),
     ("Verification notes", 36, lambda j: j.verification_notes, "wrap"),
+    ("Scam-text model", 10, lambda j: j.extra.get("scam_text_prob"), "text"),
     ("Last verified live", 15, lambda j: _d(j.last_verified_live), "date"),
     ("Times seen", 9, lambda j: j.times_seen, "int"),
     ("Also listed at", 40, lambda j: "\n".join(u for u in j.urls if u != j.url)[:2000], "wrap"),
@@ -121,13 +124,16 @@ def _sort_key(j: Job):
     return (-j.legit_score, -(j.posted_at.timestamp() if j.posted_at else 0), j.company.lower())
 
 
-def write_workbook(path: str | Path, jobs: list[Job], flagged: list[Job], companies: list[dict], run_log: dict, about: list[tuple[str, str]]) -> Path:
+def write_workbook(path: str | Path, jobs: list[Job], flagged: list[Job], companies: list[dict], run_log: dict, about: list[tuple[str, str]], new_this_run: list[Job] | None = None) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     wb = Workbook()
     ws = wb.active
     ws.title = "Jobs"
     _write_rows(ws, COLUMNS, sorted(jobs, key=_sort_key), score_col=11)
+    if new_this_run is not None:
+        wsn = wb.create_sheet("New this run")
+        _write_rows(wsn, COLUMNS, sorted(new_this_run, key=_sort_key), score_col=11)
 
     ws2 = wb.create_sheet("Flagged")
     flag_cols = [("Why flagged", 50, lambda j: j.extra.get("_flag_reason") or "; ".join(j.flags), "wrap")] + COLUMNS
