@@ -168,3 +168,28 @@ def test_name_match_levels():
     assert name_match_level("Mastercard Inc", "Mastercard") == 2
     assert name_match_level("PricewaterhouseCoopers", "PwC") == 0
     assert name_match_level("London Stock Exchange Group", "London stock Exchange") == 2
+
+
+def test_canonical_url_keeps_identifying_parameters():
+    from ai_job_radar.text import canonical_url
+    assert canonical_url("https://in.indeed.com/viewjob?jk=53b5d147754d168f&from=serp&utm_source=x") == "https://in.indeed.com/viewjob?jk=53b5d147754d168f"
+    assert canonical_url("https://in.indeed.com/viewjob?jk=aaa") != canonical_url("https://in.indeed.com/viewjob?jk=bbb")
+    assert canonical_url("https://www.glassdoor.co.in/job-listing/j?jl=1010319444203") == "https://glassdoor.co.in/job-listing/j?jl=1010319444203"
+    assert canonical_url("https://www.linkedin.com/jobs/view/4488061858/?refId=abc&trackingId=xyz") == "https://linkedin.com/jobs/view/4488061858"
+    assert canonical_url(None) == ""
+
+
+def test_merge_keeps_distinct_indeed_postings():
+    from ai_job_radar.pipeline.dedup import merge_jobs
+    a = Job(title="ML Engineer", company="Acme", url="https://in.indeed.com/viewjob?jk=aaa", source="indeed", location_raw="Pune, India")
+    b = Job(title="Data Scientist", company="Beta", url="https://in.indeed.com/viewjob?jk=bbb", source="indeed", location_raw="Pune, India")
+    c = Job(title="Data Scientist", company="Beta", url="https://in.indeed.com/viewjob?jk=bbb&from=serp", source="indeed", location_raw="Pune, India")
+    out = merge_jobs([a, b, c])
+    assert len(out) == 2, "different jk ids stay apart; the same jk with tracking noise merges"
+
+
+def test_site_preference():
+    from ai_job_radar.pipeline.enrich import prefer_site
+    assert prefer_site(["https://amazon.it/", "https://www.amazon.com/", "https://amazon.in"], "IN") == "https://www.amazon.com/"
+    assert prefer_site(["https://epam.kz", "https://epam.in"], "IN") == "https://epam.in"
+    assert prefer_site(["https://boards.greenhouse.io/x"], "IN") is None

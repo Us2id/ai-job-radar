@@ -214,6 +214,12 @@ def fix_mojibake(s: str | None) -> str:
     return s
 
 
+_REGION_WORDS = {
+    "india", "usa", "us", "uk", "canada", "australia", "germany", "singapore", "ireland", "europe", "asia", "africa",
+    "america", "americas", "uae", "dubai", "japan", "china", "france", "spain", "italy", "netherlands", "poland",
+    "mexico", "brazil", "pakistan", "bangladesh", "philippines", "indonesia", "vietnam", "malaysia", "apac", "emea",
+    "latam", "mena", "anz", "nordics", "benelux", "switzerland", "austria", "sweden", "denmark", "norway", "finland",
+}
 _NAME_PREFIX_RE = re.compile(r"(?i)^\s*(?:(?:careers?|jobs?|work|working|hiring|openings?|opportunities)\s+(?:at|with|@)\s+|join\s+(?:us\s+at\s+)?(?=\S))")
 _NAME_SUFFIX_RE = re.compile(
     r"(?i)[\s:|–—-]*\b(careers?( site| page| portal)?|jobs?( board| portal| page)?|job board|career site|hiring|"
@@ -229,6 +235,9 @@ def clean_company_name(name: str | None) -> str:
     for _ in range(2):
         s2 = _NAME_PREFIX_RE.sub("", s)
         s2 = _NAME_SUFFIX_RE.sub("", s2).strip(" :|-–—")
+        m = re.search(r"\s+in\s+(?:the\s+)?([A-Za-z]+)$", s2)
+        if m and m.group(1).lower() in _REGION_WORDS:
+            s2 = s2[: m.start()]
         if s2 == s or not s2:
             break
         s = s2
@@ -267,3 +276,31 @@ def domain_hints(text: str | None, company_norm: str) -> list[str]:
         if named or n >= 2:
             ranked.append((0 if named else 1, -n, len(d), d))
     return [d for _, _, _, d in sorted(ranked)]
+
+
+# ----------------------------------------------------------------------------- URL identity
+_TRACKING_PARAMS = {
+    "ref", "refid", "trk", "trkinfo", "trackingid", "source", "src", "position", "pagenum", "originalsubdomain",
+    "fbclid", "gclid", "msclkid", "mc_cid", "mc_eid", "campaign", "medium", "_ga", "_gl", "ss", "sid", "lipi",
+    "licu", "li", "orig", "origin", "from", "referer", "referrer", "iis", "iisn", "ccid", "pos", "rank", "rid",
+    "vjs", "vjk", "advn", "xkcb", "tk", "fromage", "sort", "page", "start", "ctx", "cmp", "t", "jvs",
+}
+
+
+def canonical_url(url: str | None) -> str:
+    """The part of a URL that identifies the posting: scheme and host lowered, tracking parameters dropped,
+    identifying parameters kept ('viewjob?jk=53b5d1' stays distinct from 'viewjob?jk=bd124a'), no fragment."""
+    u = (url or "").strip()
+    if not u:
+        return ""
+    from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+
+    try:
+        p = urlsplit(u)
+    except ValueError:
+        return u.lower()
+    host = (p.netloc or "").lower()
+    host = re.sub(r"^www\d?\.", "", host)
+    path = re.sub(r"/{2,}", "/", p.path or "/").rstrip("/") or "/"
+    keep = sorted((k, v) for k, v in parse_qsl(p.query, keep_blank_values=False) if k.lower() not in _TRACKING_PARAMS and not k.lower().startswith("utm_"))
+    return urlunsplit((p.scheme.lower() or "https", host, path, urlencode(keep), ""))

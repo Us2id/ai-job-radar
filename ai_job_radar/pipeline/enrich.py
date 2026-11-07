@@ -88,7 +88,28 @@ def name_matches(candidate: str, target: str) -> bool:
     return name_match_level(candidate, target) > 0
 
 
-def clearbit_domain(http: Http, name: str) -> str | None:
+_GLOBAL_TLDS = {"com", "io", "ai", "co", "org", "net", "dev", "app", "tech", "cloud", "software", "info", "biz", "global"}
+
+
+def site_rank(domain: str, country: str | None) -> tuple:
+    """Sort key for choosing among a company's domains: a global TLD first, then the country's own, then the rest; shorter wins ties."""
+    tld = domain.rsplit(".", 1)[-1].lower()
+    cc = (country or "").lower()
+    return (0 if tld in _GLOBAL_TLDS else 1 if cc and tld == cc else 2, len(domain), domain)
+
+
+def prefer_site(urls: list[str], country: str | None) -> str | None:
+    """The best employer website among several (Wikidata lists apple.com.cn next to apple.com)."""
+    cands = []
+    for u in urls:
+        site, _ = split_company_links(u)
+        d = root_domain(domain_of(site)) if site else None
+        if site and d:
+            cands.append((site_rank(d, country), site))
+    return min(cands)[1] if cands else None
+
+
+def clearbit_domain(http: Http, name: str, country: str | None = None) -> str | None:
     """The employer's domain from Clearbit's free autocomplete; among name matches the shortest domain wins
     (mastercard.com over mastercard.com.au)."""
     try:
@@ -104,7 +125,7 @@ def clearbit_domain(http: Http, name: str) -> str | None:
                 continue
             lvl = name_match_level(cn, target)
             if lvl:
-                matches.append((2 - lvl, len(dom), dom))
+                matches.append((2 - lvl, site_rank(dom, country), dom))
         if matches:
             return sorted(matches)[0][2]
     except Exception:  # noqa: BLE001
@@ -271,7 +292,7 @@ def _entity_facts(http: Http, qid: str) -> tuple[str | None, list[str]]:
         return best[0], sites
 
 
-def wikipedia_company(http: Http, name: str, domain: str | None) -> WikiCompany:
+def wikipedia_company(http: Http, name: str, domain: str | None, country: str | None = None) -> WikiCompany:
     """Resolve a company through English Wikipedia: the article named after the company (or 'Name (company)'),
     accepted only when its one-line description reads like a company and, when a website domain is known,
     the recorded website agrees. Employees come from Wikidata's P1128, then from the infobox.
@@ -295,7 +316,7 @@ def wikipedia_company(http: Http, name: str, domain: str | None) -> WikiCompany:
             continue  # same name, different company
         stale = _employees_year(emp) < datetime.now(tz=timezone.utc).year - 2
         box = wikipedia_infobox(http, d.get("title") or title) if (not emp or stale) else {}
-        site_ok = next((u for u in sites if split_company_links(u)[0]), None) or split_company_links(box.get("website"))[0]
+        site_ok = prefer_site(sites, country) or split_company_links(box.get("website"))[0]
         if domain and not site_domains and site_ok and root_domain(domain_of(site_ok)) != domain:
             continue
         employees, source = emp, "wikidata"
@@ -540,7 +561,7 @@ class Enricher:
                 self.counters["text_hint"] += 1
         if not domain and web_ok and not rec.get("website") and self.counters["clearbit"] < int(self.o.get("max_clearbit", 400)):
             self.counters["clearbit"] += 1
-            d = clearbit_domain(self.http, name)
+            d = clearbit_domain(self.http, name, self.o.get("country"))
             if d:
                 domain, website = root_domain(d), f"https://{d}"
         if not board and domain:
@@ -704,7 +725,7 @@ class Enricher:
                 if c is None:
                     unresolved.append((cn, name, domain, g))
                     continue
-                self._record_size(cn, c.qid, c.employees, "wikidata", next((u for u in c.sites if split_company_links(u)[0]), None), None, c.article)
+                self._record_size(cn, c.qid, c.employees, "wikidata", prefer_site(c.sites, self.o.get("country")), None, c.article)
                 if c.article and (not c.employees or _employees_year(c.employees) < now.year - 2):
                     unresolved.append((cn, name, domain, g))  # the infobox may know, or know something newer
                 self._push_company(cn, g)
@@ -716,7 +737,7 @@ class Enricher:
             done += 1
             self.counters["wikipedia"] += 1
             try:
-                w = wikipedia_company(self.http, name, domain)
+                w = wikipedia_company(self.http, name, domain, self.o.get("country"))
             except RateLimited as e:
                 self.log(f"[enrich] {e}; remaining company-size lookups wait for the next run")
                 break

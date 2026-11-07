@@ -304,7 +304,7 @@ def run(cfg: RunConfig) -> RunSummary:
     log(f"[pipeline] {len(merged)} unique openings; {len(in_window)} opened within {cfg.days} days; {len(reposts_out)} older postings set aside")
 
     # ------------------------------------------------------------------ enrich + score
-    enricher = Enricher(store, http, boards, log=log, options={"no_web_lookups": cfg.no_web_lookups, "max_discover": cfg.max_discover, "enrich_budget": cfg.enrich_budget})
+    enricher = Enricher(store, http, boards, log=log, options={"no_web_lookups": cfg.no_web_lookups, "max_discover": cfg.max_discover, "enrich_budget": cfg.enrich_budget, "country": cc})
     enricher.run(merged)
     score_all(merged, now)
 

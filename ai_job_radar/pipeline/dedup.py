@@ -6,7 +6,7 @@ from collections import defaultdict
 from rapidfuzz import fuzz
 
 from ..models import ATS_KINDS, Job
-from ..text import normalize_company, normalize_title
+from ..text import canonical_url, normalize_company, normalize_title
 
 SOURCE_RANK = {
     **{k: 0 for k in ATS_KINDS},
@@ -71,7 +71,7 @@ def merge_jobs(jobs: list[Job]) -> list[Job]:
             d = j.posted_at.date().isoformat()
             if d not in j.posted_claims:
                 j.posted_claims.append(d)
-        u = j.url.split("?", 1)[0].rstrip("/").lower() if j.url else ""
+        u = canonical_url(j.url)
         if u and u in by_url:
             _merge_into(by_url[u], j)
             continue
