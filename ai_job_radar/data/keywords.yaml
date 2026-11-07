@@ -40,6 +40,10 @@ deep_search_terms:
 
 # A title matching any of these gets the pattern's weight as its title score (max wins).
 title_include:
+  # Other languages: German, French, Spanish, Portuguese, Italian, Dutch, Japanese, Chinese, Korean
+  - {re: '\b(künstliche intelligenz|kuenstliche intelligenz|maschinelles lernen|maschinellem lernen|sprachmodell\w*|KI[- ](engineer|entwickler|ingenieur|spezialist|experte|expertin|forscher|architekt|manager|praktik\w+|werkstudent\w*)|data scientist \(m|datenwissenschaft\w*)\b', w: 100}
+  - {re: '\b(intelligence artificielle|apprentissage (automatique|profond|machine)|ingénieur (ia|ml)|scientifique des données|inteligencia artificial|aprendizaje (automático|profundo)|inteligência artificial|aprendizado de máquina|intelligenza artificiale|apprendimento automatico|kunstmatige intelligentie)\b', w: 100}
+  - {re: '(人工知能|機械学習|深層学習|自然言語処理|人工智能|机器学习|深度学习|大模型|算法工程师|인공지능|머신러닝|딥러닝|자연어처리)', w: 100}
   - { re: '\b(machine|deep|reinforcement|statistical|federated|representation) learning\b', w: 100 }
   - { re: '\bartificial intelligence\b', w: 100 }
   - { re: '(?<![A-Za-z])A\.?I\.?(?![A-Za-z])', w: 92 }
@@ -110,6 +114,7 @@ title_soft_exclude:
   - '\b(tax\w*|legal|audit\w*|compliance|finance|financial|accounting|procurement|treasury|payroll|workspace|facilities|admin|administrative|real estate|events?)\b'
   - '\b(creator|influencer|brand|social|community|editorial|public relations|communications?)\b'
   - '\bprofessional services\b|\bimplementation (consultant|specialist|manager)\b|\bsolutions? consultant\b|\bpre-?sales\b|\bcustomer (engineer|architect)\b|\btechnical account manager\b'
+  - '\b(technical|customer|client) success\b|\bcounsel\b|\bparalegal\b|\bpenetration tester\b|\bpentest|\bIC design\b|\b(rf|mmwave|microwave) \w+ (engineer|manager|designer)\b|\blearning solutions\b|\bsales engineer\b'
   - '\bSDET\b|\bsoftware development engineer in test\b|\bquality (engineer|analyst|assurance)\b|\bautomation (engineer|tester|test)\b|\btest (lead|analyst|architect|automation)\b|\bin test\b'
   - '\bengineering (manager|head|director)\b(?!.*\b(ai|ml|llm|nlp|machine learning|deep learning|computer vision|genai|generative|data science|mlops|data|research|model|agents?)\b)'
 
@@ -118,6 +123,7 @@ title_soft_exclude:
 # A generic title needs at least two distinct hard terms (or one hard term plus several soft ones)
 # to pass the default relevance threshold of 50.
 desc_hard:
+  - '\b(künstliche intelligenz|maschinelles lernen|sprachmodell\w*|intelligence artificielle|apprentissage (automatique|profond)|inteligencia artificial|aprendizaje automático|inteligência artificial|intelligenza artificiale|kunstmatige intelligentie)\b|(人工知能|機械学習|人工智能|机器学习|深度学习|인공지능|머신러닝)'
   - '\bpytorch\b'
   - '\btensorflow\b'
   - '\bjax\b'

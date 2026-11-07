@@ -22,10 +22,12 @@ def apply_window(job: Job, now: datetime, days: int) -> None:
     job.opened_at = opened
     job.days_open = max(0, (now - opened).days)
     reposted = False
-    if latest_claim and earliest_claim and (latest_claim - earliest_claim).days >= 3:
-        reposted = True
     if latest_claim and job.times_seen > 1 and (latest_claim - first_seen).days >= 3:
         reposted = True
+        job.extra["repost_reason"] = f"date refreshed since first seen on {first_seen.date().isoformat()}"
+    elif latest_claim and earliest_claim and (latest_claim - earliest_claim).days >= 3:
+        reposted = True
+        job.extra["repost_reason"] = f"posted dates differ by {(latest_claim - earliest_claim).days} days across sites or cities"
     job.reposted = reposted
     job.in_window = opened >= cutoff
     if not job.posted_at and job.times_seen <= 1 and "date_unknown" not in job.flags:

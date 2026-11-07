@@ -181,7 +181,7 @@ def score_all(jobs: list[Job], now: datetime) -> None:
                     break
         if j.reposted:
             score += int(g["reposted_weight"])
-            flags.append("reposted (date refreshed since first seen)")
+            flags.append("reposted (" + str(j.extra.get("repost_reason") or "date refreshed since first seen") + ")")
         n_loc = max(len(spread[(j.company_norm, normalize_title(j.title))]), len(j.extra.get("locations") or []))
         if n_loc >= int(g["many_locations_threshold"]):
             score += int(g["many_locations_weight"])

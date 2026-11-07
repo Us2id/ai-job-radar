@@ -41,14 +41,15 @@ def _merge_into(primary: Job, other: Job) -> None:
     locs = primary.extra.setdefault("locations", [])
     if primary.location_raw and primary.location_raw not in locs:
         locs.insert(0, primary.location_raw)
-    if other.location_raw:
-        key = _city_key(other.city or other.location_raw)
-        if key not in {_city_key(c) for c in primary.extra.get("cities", [])} and other.location_raw not in locs:
-            locs.append(other.location_raw)
     cities = primary.extra.setdefault("cities", [])
-    for c in (primary.city or primary.location_raw, other.city or other.location_raw):
-        if c and _city_key(c) not in {_city_key(x) for x in cities}:
-            cities.append(c)
+    first = primary.city or primary.location_raw
+    if first and _city_key(first) not in {_city_key(x) for x in cities}:
+        cities.append(first)
+    second = other.city or other.location_raw
+    if second and _city_key(second) not in {_city_key(x) for x in cities}:
+        cities.append(second)
+        if other.location_raw and other.location_raw not in locs:
+            locs.append(other.location_raw)
     if len(locs) <= 1:
         primary.extra.pop("locations", None)
     for u in other.urls:
