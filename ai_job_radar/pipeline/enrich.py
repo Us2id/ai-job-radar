@@ -9,7 +9,7 @@ import threading
 import time
 from urllib.parse import quote, unquote
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from rapidfuzz import fuzz
 
@@ -735,10 +735,10 @@ class Enricher:
                 continue
             marker = rec.get("wikidata") or ""
             if marker.startswith("none:"):
-                try:
-                    if datetime.fromisoformat(marker[5:]) > now - timedelta(days=90):
+                try:  # 'none:2026-11-07' = looked up on that date and found nothing; try again after 90 days
+                    if date.fromisoformat(marker[5:15]) > (now - timedelta(days=90)).date():
                         continue
-                except ValueError:
+                except (ValueError, TypeError):
                     pass
             elif marker and marker != "none":
                 continue  # resolved to an entity before; it simply has no employee count
