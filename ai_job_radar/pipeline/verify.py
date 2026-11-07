@@ -51,8 +51,9 @@ def _years_since(date_s: str | None, now: datetime) -> float | None:
 
 
 _NEGATION_RE = re.compile(
-    r"(?i)\b(never|not|no|won'?t|wouldn'?t|don'?t|doesn'?t|didn'?t|cannot|can'?t|without|free of|beware|fraud\w*|scam\w*|"
-    r"legitimate|caution|alert|red flag|warning|bogus|fake|impersonat\w*|phishing|suspicious)\b"
+    r"(?i)\b(never|not|no|none|neither|nor|won'?t|wouldn'?t|don'?t|doesn'?t|didn'?t|cannot|can'?t|without|free of|"
+    r"beware|fraud\w*|scam\w*|legitimate|caution|alert|red flag|warning|bogus|fake|impersonat\w*|phishing|suspicious|"
+    r"is free|are free|no cost|at no|any kind of fee|any fee)\b"
 )
 _SENTENCE_SPLIT_RE = re.compile(r"[.!?\n]")
 
@@ -109,10 +110,14 @@ def score_all(jobs: list[Job], now: datetime) -> None:
         if yrs is not None:
             days = yrs * 365.25
             applied = False
+            guessed = str(j.extra.get("website_source", "")).startswith("clearbit")
             for lim, w in pos["domain_too_new_days"]:
                 if days < lim:
-                    score += w
-                    flags.append(f"company domain registered only {int(days)} days ago")
+                    if guessed:
+                        notes.append(f"website guessed from the company name; that domain is only {int(days)} days old")
+                    else:
+                        score += w
+                        flags.append(f"company domain registered only {int(days)} days ago")
                     applied = True
                     break
             if not applied:

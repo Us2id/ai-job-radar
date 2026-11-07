@@ -1,5 +1,5 @@
 """Tests for the defects the first full India run exposed."""
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from unittest import mock
 
 import pytest
@@ -210,3 +210,43 @@ def test_job_site_postings_repeated_across_cities_merge_into_one_row():
     merged = next(j for j in out if not j.is_ats)
     assert len(merged.extra["locations"]) == 3 and len(merged.urls) == 3
     assert "+2 more" in _location(merged)
+
+
+def test_money_patterns_do_not_match_inside_longer_words():
+    now = datetime.now(timezone.utc)
+    j = Job(title="Senior LLMOps Engineer", company="Norstella", url="https://x.com/1", source="indeed",
+            description="Translate prototype extraction logic into production-hardened, recurrent processing feeds.")
+    j.company_norm = "norstella"
+    score_all([j], now)
+    assert not any("money" in f.lower() for f in j.flags)
+    j2 = Job(title="Specialist", company="LTM", url="https://x.com/2", source="indeed",
+             description="Please note that neither LTM nor any of its authorized recruitment agencies charge any candidate registration fee or any other fees.")
+    j2.company_norm = "ltm"
+    score_all([j2], now)
+    assert not any("money" in f.lower() for f in j2.flags)
+
+
+def test_same_name_companies_are_resolved_by_the_postings_words_or_declined():
+    from ai_job_radar.pipeline.enrich import WikiCandidate as WC, pick_candidate as pick
+    tide = [WC("Q1779936", 1, "Tide", "Norwegian public transport company", "57", ["http://www.tide.no"], "Tide (transportation company)"),
+            WC("Q63076799", 3, "Tide", "British banking company", None, ["https://www.tide.co/"], "Tide (company)")]
+    ctx = "At Tide we offer business banking accounts to SMEs in the UK and India. Fintech, payments, cards."
+    assert pick("Tide", None, tide, ctx).qid == "Q63076799"
+    assert pick("Tide", None, tide, "We make the best widgets for everyone.") is None, "no overlap with either description: decline rather than guess"
+    assert pick("Tide", "tide.co", tide, "").qid == "Q63076799", "a known domain settles it regardless of context"
+
+
+def test_guessed_website_does_not_trigger_the_new_domain_penalty():
+    now = datetime.now(timezone.utc)
+    base = dict(title="Data Scientist", company="Arrive", url="https://x.com/1", source="linkedin", description="A role.")
+    guessed = Job(**base)
+    guessed.company_norm = "arrive"
+    guessed.domain_registered = (now - timedelta(days=16)).date().isoformat()
+    guessed.extra["website_source"] = "clearbit name lookup"
+    verified = Job(**dict(base, url="https://x.com/2"))
+    verified.company_norm = "arrive"
+    verified.domain_registered = guessed.domain_registered
+    verified.extra["website_source"] = "posting"
+    score_all([guessed, verified], now)
+    assert not any("registered only" in f for f in guessed.flags) and "guessed" in guessed.verification_notes
+    assert any("registered only" in f for f in verified.flags)

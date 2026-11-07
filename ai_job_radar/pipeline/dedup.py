@@ -1,6 +1,9 @@
 """Merge the same opening seen on several sites into one row."""
 from __future__ import annotations
 
+import re
+import unicodedata
+
 from collections import defaultdict
 
 from rapidfuzz import fuzz
@@ -26,14 +29,26 @@ def job_key(job: Job) -> str:
     return f"{cn}|{normalize_title(job.title)}|{(job.city or '').lower()}"
 
 
+def _city_key(s: str) -> str:
+    s = unicodedata.normalize("NFKD", s or "").encode("ascii", "ignore").decode().lower()
+    return re.sub(r"[^a-z]+", " ", s.split(",")[0]).strip()
+
+
 def _merge_into(primary: Job, other: Job) -> None:
     for s in other.sources:
         if s not in primary.sources:
             primary.sources.append(s)
     locs = primary.extra.setdefault("locations", [])
-    for loc in (primary.location_raw, other.location_raw):
-        if loc and loc not in locs:
-            locs.append(loc)
+    if primary.location_raw and primary.location_raw not in locs:
+        locs.insert(0, primary.location_raw)
+    if other.location_raw:
+        key = _city_key(other.city or other.location_raw)
+        if key not in {_city_key(c) for c in primary.extra.get("cities", [])} and other.location_raw not in locs:
+            locs.append(other.location_raw)
+    cities = primary.extra.setdefault("cities", [])
+    for c in (primary.city or primary.location_raw, other.city or other.location_raw):
+        if c and _city_key(c) not in {_city_key(x) for x in cities}:
+            cities.append(c)
     if len(locs) <= 1:
         primary.extra.pop("locations", None)
     for u in other.urls:

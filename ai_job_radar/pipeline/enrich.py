@@ -70,6 +70,11 @@ def list_board_titles(board: Board, http: Http, query: str | None = None) -> lis
 
 
 # ----------------------------------------------------------------------------- lookups
+def _note_value(notes: str | None, key: str) -> str | None:
+    m = re.search(re.escape(key) + r":([^\s]+(?: [a-z]+)*)", notes or "")
+    return m.group(1).split(" wikipedia:")[0] if m else None
+
+
 def name_match_level(candidate: str, target: str) -> int:
     """How well a looked-up name denotes the company we asked about: 2 = the same name after normalisation,
     1 = the asked-for words all present with at most two extra ('London Stock Exchange Group' for 'London
@@ -456,7 +461,16 @@ def _employees_year(employees: str | None) -> int:
     return int(m.group(1)) if m else 0
 
 
-def pick_candidate(name: str, domain: str | None, cands: list[WikiCandidate]) -> WikiCandidate | None:
+_CTX_STOP = set("""the a an and or of for in to with on at by from as is are be we our your you this that it its company companies
+inc ltd limited services solutions group global india indian international technologies technology software platform team teams
+role work working experience years skills strong ability across within about into over more than will also other their they have has""".split())
+
+
+def _ctx_words(s: str | None) -> set[str]:
+    return {w for w in re.findall(r"[a-z]{4,}", (s or "").lower()) if w not in _CTX_STOP}
+
+
+def pick_candidate(name: str, domain: str | None, cands: list[WikiCandidate], context: str = "") -> WikiCandidate | None:
     """The candidate that is this company: website domain match when a domain is known, otherwise the same
     name with a company-like description (a longer name such as 'PwC Norway' only when it has its own
     Wikipedia article). Never a near-miss ('Capcom' for 'Capco')."""
@@ -476,6 +490,15 @@ def pick_candidate(name: str, domain: str | None, cands: list[WikiCandidate]) ->
     if not scored:
         return None
     scored.sort(key=lambda t: t[:5])
+    exact = [t for t in scored if t[0] == 0 or t[1] == 0]
+    if not domain and len(exact) > 1:
+        # Several companies share this name (Tide the bank, Tide the Norwegian bus operator). Let the postings decide:
+        # the candidate whose Wikidata description shares words with the job text wins; with no such overlap, decline.
+        ctx = _ctx_words(context)
+        overlap = sorted(((len(_ctx_words(t[5].description + " " + (t[5].article or "")) & ctx), -i, t[5]) for i, t in enumerate(exact)), key=lambda x: (-x[0], x[1]))
+        if overlap[0][0] == 0 or (len(overlap) > 1 and overlap[0][0] == overlap[1][0]):
+            return None
+        return overlap[0][2]
     return scored[0][5]
 
 
@@ -537,6 +560,7 @@ class Enricher:
         name = job0.company
         # Pull what any sighting already knows.
         website = split_company_links(rec.get("website") or next((j.company_website for j in jobs if j.company_website), None))[0]
+        website_source = _note_value(rec.get("notes"), "website-source") or ("posting" if website else None)
         size = rec.get("size") or next((j.company_size for j in jobs if j.company_size), None)
         size_source = rec.get("size_source") or next((j.company_size_source for j in jobs if j.company_size), None)
         industry = rec.get("industry") or next((j.company_industry for j in jobs if j.company_industry), None)
@@ -544,6 +568,7 @@ class Enricher:
         board = self.boards_by_norm.get(cn)
         if board and not website:
             website = board.website
+            website_source = "board" if website else website_source
         if not website:
             for j in jobs:
                 if j.is_ats and j.url:
@@ -557,13 +582,13 @@ class Enricher:
         if not domain and not rec.get("website"):
             text = "\n".join((j.description or "")[:6000] for j in jobs[:3])
             for hint in domain_hints(text, cn)[:1]:
-                domain, website = hint, f"https://{hint}"
+                domain, website, website_source = hint, f"https://{hint}", "posting text"
                 self.counters["text_hint"] += 1
         if not domain and web_ok and not rec.get("website") and self.counters["clearbit"] < int(self.o.get("max_clearbit", 400)):
             self.counters["clearbit"] += 1
             d = clearbit_domain(self.http, name, self.o.get("country"))
             if d:
-                domain, website = root_domain(d), f"https://{d}"
+                domain, website, website_source = root_domain(d), f"https://{d}", "clearbit name lookup"
         if not board and domain:
             board = self.boards_by_domain.get(domain)
         # Domain age (cached 90 days).
@@ -590,10 +615,13 @@ class Enricher:
             bchecked = now.isoformat()
             if found:
                 board = found
+        notes = rec.get("notes") or ""
+        if website and website_source and "website-source:" not in notes:
+            notes = (notes + f" website-source:{website_source}").strip()
         self.store.upsert_company(
             cn, name=name, website=website, domain=domain, size=size, size_source=size_source, industry=industry,
             linkedin=linkedin, board_platform=board_platform, board_url=board_url, board_checked_at=bchecked,
-            domain_registered=registered, domain_checked_at=checked, wikidata=wikidata,
+            domain_registered=registered, domain_checked_at=checked, wikidata=wikidata, notes=notes or None,
         )
         rec2 = self.store.get_company(cn) or {}
         for j in jobs:
@@ -604,6 +632,9 @@ class Enricher:
             j.company_industry = rec2.get("industry") or j.company_industry
             j.company_linkedin = rec2.get("linkedin") or j.company_linkedin
             j.domain_registered = rec2.get("domain_registered")
+            ws = _note_value(rec2.get("notes"), "website-source")
+            if ws:
+                j.extra["website_source"] = ws
             if rec2.get("board_url") and rec2.get("board_platform") != "none":
                 j.company_board_url = rec2["board_url"]
             if j.is_ats:
@@ -721,7 +752,8 @@ class Enricher:
                 self.log(f"[enrich] wikidata batch failed: {type(e).__name__}: {str(e)[:100]}")
                 found = {}
             for cn, name, domain, g in batch:
-                c = pick_candidate(name, domain, found.get(name) or [])
+                context = " ".join((j.description or "")[:3000] for j in g[:2]) + " " + (g[0].company_industry or "")
+                c = pick_candidate(name, domain, found.get(name) or [], context)
                 if c is None:
                     unresolved.append((cn, name, domain, g))
                     continue
@@ -758,6 +790,8 @@ class Enricher:
         if site_ok and not rec.get("website"):
             fields["website"] = site_ok
             fields["domain"] = root_domain(domain_of(site_ok))
+            if "website-source:" not in (rec.get("notes") or ""):
+                fields["notes"] = ((rec.get("notes") or "") + " website-source:wikipedia").strip()
         if industry and not rec.get("industry"):
             fields["industry"] = industry
         if article:

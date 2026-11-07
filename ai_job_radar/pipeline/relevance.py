@@ -162,7 +162,7 @@ class DomainMatcher:
             h = rx.findall(head)
             b = rx.findall(body)
             if h:
-                score += 1.0
+                score += 1.5  # the title, industry or company blurb naming the field counts; body-only weak words do not
                 why.append(_first(rx, head))
             if b:
                 score += min(2, len(b)) * 0.5
