@@ -283,3 +283,10 @@ def test_internshala_is_opt_in():
     with contextlib.redirect_stdout(buf), pytest.raises(SystemExit):
         cli.main(["run", "--help"])
     assert "--internships" in buf.getvalue()
+
+
+def test_only_real_404s_mark_a_board_missing():
+    assert classify_board_error("workday:acme.wd5.myworkdayjobs.com/x: JSONDecodeError: Expecting value: line 1 column 1 (char 0)") != "missing"
+    assert classify_board_error("workday:acme.wd5.myworkdayjobs.com/x: RuntimeError: Workday answered with an HTML page instead of JSON (service interruption or bot check)") == "rate-limited"
+    assert classify_board_error("bamboohr:acme: JSONDecodeError: Expecting value: line 1 column 1 (char 0)") == "missing"
+    assert classify_board_error("greenhouse:acme: HTTPError: 404 Client Error: Not Found for url: x") == "missing"

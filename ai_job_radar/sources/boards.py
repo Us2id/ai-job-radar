@@ -22,14 +22,18 @@ def _select_boards(boards: list[Board], ctx: RunContext) -> list[Board]:
     return out
 
 
-MISSING_MARKERS = ("404 Client Error", "JSONDecodeError", "TooManyRedirects", "410 Client Error")
+MISSING_MARKERS = ("404 Client Error", "TooManyRedirects", "410 Client Error")
 
 
 def classify_board_error(err: str) -> str:
-    """'missing' for boards that no longer exist, 'rate-limited', or 'error'."""
-    if any(m in err for m in MISSING_MARKERS):
+    """'missing' for boards that no longer exist, 'rate-limited' for a host that is pushing back, or 'error'.
+
+    A non-JSON answer counts as missing only for BambooHR, whose unknown subdomains return an HTML page;
+    elsewhere (Workday in particular) an HTML page with status 200 is a bot check, not a vanished board.
+    """
+    if any(m in err for m in MISSING_MARKERS) or (err.startswith("bamboohr:") and "JSONDecodeError" in err):
         return "missing"
-    if "rate-limited" in err or "429" in err:
+    if "rate-limited" in err or "429" in err or "bot check" in err or "HTML page" in err:
         return "rate-limited"
     return "error"
 

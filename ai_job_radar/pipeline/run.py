@@ -242,7 +242,7 @@ def run(cfg: RunConfig) -> RunSummary:
         marks = []
         for e in ats_stats.errors:
             bid, _, msg = e.partition(": ")
-            if ":" in bid and classify_board_error(msg) == "missing":
+            if ":" in bid and classify_board_error(e) == "missing":
                 marks.append((bid, "missing", msg))
         if marks:
             store.mark_boards(marks, now)

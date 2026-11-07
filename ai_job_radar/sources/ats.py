@@ -405,7 +405,10 @@ def fetch_workday(board: Board, ctx: RunContext) -> list[Job]:
     for term in terms:
         offset = 0
         while offset < int(ctx.opt("workday_max_per_term", 100)) and time.monotonic() < deadline:
-            data = ctx.http.post_json(api, {"appliedFacets": {}, "limit": 20, "offset": offset, "searchText": term})
+            try:
+                data = ctx.http.post_json(api, {"appliedFacets": {}, "limit": 20, "offset": offset, "searchText": term})
+            except ValueError as e:  # an HTML page instead of JSON: Workday's "currently unavailable" interstitial or a bot check
+                raise RuntimeError("Workday answered with an HTML page instead of JSON (service interruption or bot check); the board is kept for the next run") from e
             posts = data.get("jobPostings") or []
             for p in posts:
                 age = _wd_days(p.get("postedOn"))
