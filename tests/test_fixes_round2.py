@@ -193,3 +193,20 @@ def test_site_preference():
     assert prefer_site(["https://amazon.it/", "https://www.amazon.com/", "https://amazon.in"], "IN") == "https://www.amazon.com/"
     assert prefer_site(["https://epam.kz", "https://epam.in"], "IN") == "https://epam.in"
     assert prefer_site(["https://boards.greenhouse.io/x"], "IN") is None
+
+
+def test_job_site_postings_repeated_across_cities_merge_into_one_row():
+    from ai_job_radar.pipeline.dedup import merge_jobs
+    from ai_job_radar.pipeline.excel import _location
+    rows = []
+    for i, city in enumerate(["Pune", "Bengaluru", "Chennai"]):
+        j = Job(title="Machine Learning Engineer (Freelancer)", company="Soul Ai", url=f"https://www.naukri.com/job-{i}", source="naukri", location_raw=f"{city}, India")
+        j.city = city
+        rows.append(j)
+    ats = Job(title="Machine Learning Engineer (Freelancer)", company="Soul Ai", url="https://boards.greenhouse.io/soul/1", source="greenhouse:soul", location_raw="Mumbai, India")
+    ats.city = "Mumbai"
+    out = merge_jobs(rows + [ats])
+    assert len(out) == 2, "three city copies on a job site become one row; the employer-board posting stays its own row"
+    merged = next(j for j in out if not j.is_ats)
+    assert len(merged.extra["locations"]) == 3 and len(merged.urls) == 3
+    assert "+2 more" in _location(merged)

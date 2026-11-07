@@ -36,8 +36,11 @@ def _location(j: Job) -> str:
     parts = [p for p in [j.city, j.region] if p]
     if j.country_name or j.country:
         parts.append(j.country_name or j.country)
-    s = ", ".join(parts)
-    return s if s else (j.location_raw or "")
+    s = ", ".join(parts) or (j.location_raw or "")
+    others = [loc for loc in (j.extra.get("locations") or []) if loc and loc != j.location_raw]
+    if others:
+        s = f"{s} (+{len(others)} more: " + "; ".join(others[:6]) + (" …" if len(others) > 6 else "") + ")"
+    return s
 
 
 # (header, width, getter, kind) — kind: text | link | date | int | wrap

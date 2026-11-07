@@ -30,6 +30,12 @@ def _merge_into(primary: Job, other: Job) -> None:
     for s in other.sources:
         if s not in primary.sources:
             primary.sources.append(s)
+    locs = primary.extra.setdefault("locations", [])
+    for loc in (primary.location_raw, other.location_raw):
+        if loc and loc not in locs:
+            locs.append(loc)
+    if len(locs) <= 1:
+        primary.extra.pop("locations", None)
     for u in other.urls:
         if u not in primary.urls:
             primary.urls.append(u)
@@ -94,6 +100,11 @@ def merge_jobs(jobs: list[Job]) -> list[Job]:
                 ct = normalize_title(c.title)
                 same_city = (not j.city or not c.city or j.city.lower() == c.city.lower())
                 if not same_city:
+                    # A job-site posting repeated city by city (the same title, the same employer, neither from the
+                    # employer's own board) is one opening advertised in several places: keep one row, list every city.
+                    if t == ct and not j.is_ats and not c.is_ats:
+                        target = c
+                        break
                     continue
                 if t == ct or (fuzz.token_sort_ratio(t, ct) >= 94 and (j.seniority or "") == (c.seniority or "")):
                     target = c

@@ -55,7 +55,8 @@ Last verified live, Times seen, Also listed at, Description (start), Review note
    country (a world gazetteer parses city/state/country text; remote postings count when they say
    worldwide, the country, or its region), and when it matches the requested domain(s).
 3. **Merge.** The same opening seen on several sites becomes one row with all sources and links.
-   Employer-board versions win over job-site copies.
+   Employer-board versions win over job-site copies. A job-site posting repeated city by city becomes
+   one row that lists every city (and "same title in N locations" still counts as a ghost-job signal).
 4. **Remember.** A SQLite database (`~/.ai-job-radar/radar.sqlite`) records when each opening was first
    seen. The window is applied to the *earliest* of the claimed posting date and the first-seen date, so
    a job reposted every week is reported once and flagged as reposted. The window is counted in whole

@@ -177,7 +177,7 @@ def score_all(jobs: list[Job], now: datetime) -> None:
         if j.reposted:
             score += int(g["reposted_weight"])
             flags.append("reposted (date refreshed since first seen)")
-        n_loc = len(spread[(j.company_norm, normalize_title(j.title))])
+        n_loc = max(len(spread[(j.company_norm, normalize_title(j.title))]), len(j.extra.get("locations") or []))
         if n_loc >= int(g["many_locations_threshold"]):
             score += int(g["many_locations_weight"])
             flags.append(f"same title posted in {n_loc} locations")
