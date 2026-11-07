@@ -141,7 +141,8 @@ def test_pick_candidate_rules():
     tide = [WC("Q23384", 1, "tide", "rise and fall of sea levels", None, [], "Tide"),
             WC("Q63076799", 3, "Tide", "British banking company", None, ["https://www.tide.co/"], "Tide (company)")]
     assert pick("Tide", "tide.co", tide).qid == "Q63076799"
-    assert pick("Tide", None, tide).qid == "Q63076799"
+    assert pick("Tide", None, tide) is None, "a name shared with other entities and no supporting context: decline"
+    assert pick("Tide", None, tide, "business banking for SMEs").qid == "Q63076799"
     mercury = [WC("Q165745", 1, "Mercury Records", "American record label", None, ["http://www.mercuryrecords.com"], "Mercury Records")]
     assert pick("Mercury", "mercury.com", mercury) is None
     apple = [WC("Q312", 1, "Apple Inc.", "American multinational technology company", "164,000 (2022)", ["https://apple.com.cn/", "https://www.apple.com/"], "Apple Inc."),

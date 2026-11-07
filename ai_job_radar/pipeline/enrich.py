@@ -176,11 +176,14 @@ def rdap_registration(http: Http, domain: str) -> str | None:
     return "unknown"
 
 
+# Words that make a one-line Wikidata/Wikipedia description read like a company. Deliberately without 'group',
+# 'agency', 'studio', 'lab' or 'organization': a rock band is a group and a performing-arts collective is an
+# organisation, and both have been mistaken for employers of the same name.
 _COMPANY_WORDS = re.compile(
-    r"(?i)\b(company|companies|corporation|startup|start-up|business|enterprise|firm|manufacturer|bank|developer|"
-    r"provider|conglomerate|organization|organisation|group|laborator|institute|technology|software|platform|brand|"
-    r"chain|retailer|airline|publisher|studio|agency|lab|subsidiary|multinational|consultancy|fintech|unicorn|"
-    r"marketplace|e-commerce|ecommerce|operator|supplier|service|services)\b"
+    r"(?i)\b(company|companies|corporation|startup|start-up|business|enterprise|firm|manufacturer|bank|"
+    r"provider|conglomerate|technology|software|platform|retailer|airline|publisher|subsidiary|multinational|"
+    r"consultancy|consulting|fintech|unicorn|marketplace|e-commerce|ecommerce|operator|supplier|developer|"
+    r"brand|chain|insurer|automaker|carmaker|telecom|utility|lender|exchange|outsourcing|services? (company|firm|provider))\b"
 )
 
 
@@ -403,7 +406,7 @@ def _fmt_employees(stmts: list[tuple[str, str]]) -> str | None:
         return str(amount)
 
 
-def sparql_company_search(http: Http, names: list[str], per_name: int = 5) -> dict[str, list[WikiCandidate]]:
+def sparql_company_search(http: Http, names: list[str], per_name: int = 7) -> dict[str, list[WikiCandidate]]:
     """One request to the Wikidata query service resolves a batch of company names: it runs the entity search
     for every name server-side and returns each candidate's description, employee count (P1128), official
     websites (P856) and English Wikipedia article. One call replaces ~2 calls per company against the action
@@ -461,7 +464,7 @@ def _employees_year(employees: str | None) -> int:
     return int(m.group(1)) if m else 0
 
 
-_CTX_STOP = set("""the a an and or of for in to with on at by from as is are be we our your you this that it its company companies
+_CTX_STOP = set("""the a an and or of for in to with on at by from as is are be we our your you this that it its company companies corporation
 inc ltd limited services solutions group global india indian international technologies technology software platform team teams
 role work working experience years skills strong ability across within about into over more than will also other their they have has""".split())
 
@@ -490,16 +493,26 @@ def pick_candidate(name: str, domain: str | None, cands: list[WikiCandidate], co
     if not scored:
         return None
     scored.sort(key=lambda t: t[:5])
-    exact = [t for t in scored if t[0] == 0 or t[1] == 0]
-    if not domain and len(exact) > 1:
-        # Several companies share this name (Tide the bank, Tide the Norwegian bus operator). Let the postings decide:
-        # the candidate whose Wikidata description shares words with the job text wins; with no such overlap, decline.
-        ctx = _ctx_words(context)
-        overlap = sorted(((len(_ctx_words(t[5].description + " " + (t[5].article or "")) & ctx), -i, t[5]) for i, t in enumerate(exact)), key=lambda x: (-x[0], x[1]))
-        if overlap[0][0] == 0 or (len(overlap) > 1 and overlap[0][0] == overlap[1][0]):
+    if domain and scored[0][0] == 0:
+        return scored[0][5]  # the website settles it
+    name_tokens = set(normalize_company(name).split())
+    ctx = _ctx_words(context) - name_tokens
+
+    def support(c: WikiCandidate) -> int:
+        return len((_ctx_words(c.description + " " + (c.article or "")) - name_tokens) & ctx)
+
+    exact = [t[5] for t in scored if t[1] == 0]
+    if len(exact) > 1:
+        # Several companies share this name. The postings decide: the candidate whose Wikidata description shares
+        # words with the job text wins; with no overlap, or a tie, decline rather than guess.
+        ranked = sorted(exact, key=lambda c: (-support(c), c.rank))
+        if support(ranked[0]) == 0 or (len(ranked) > 1 and support(ranked[0]) == support(ranked[1])):
             return None
-        return overlap[0][2]
-    return scored[0][5]
+        return ranked[0]
+    best = scored[0][5]
+    if best.article and "(" in best.article and support(best) == 0:
+        return None  # 'Tide (transportation company)' for postings that never mention transport: the name is shared
+    return best
 
 
 # ----------------------------------------------------------------------------- the enricher
