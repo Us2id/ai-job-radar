@@ -121,7 +121,7 @@ def test_decode_json_ignores_wrong_charset_header():
 
 def test_board_error_classification_and_summary():
     assert classify_board_error("HTTPError: 404 Client Error: Not Found for url: x") == "missing"
-    assert classify_board_error("JSONDecodeError: Expecting value: line 1 column 1 (char 0)") == "missing"
+    assert classify_board_error("bamboohr:acme: JSONDecodeError: Expecting value: line 1 column 1 (char 0)") == "missing"
     assert classify_board_error("RateLimited: apply.workable.com rate-limited us (retry after 63523s)") == "rate-limited"
     assert classify_board_error("ReadTimeout: HTTPSConnectionPool(...)") == "error"
     out = summarize_errors(["greenhouse:a: HTTPError: 404 Client Error: Not Found", "ashby:b: HTTPError: 404 Client Error", "lever:c: ReadTimeout: x"])
