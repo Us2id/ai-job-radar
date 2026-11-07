@@ -38,20 +38,6 @@ def _merge_into(primary: Job, other: Job) -> None:
     for s in other.sources:
         if s not in primary.sources:
             primary.sources.append(s)
-    locs = primary.extra.setdefault("locations", [])
-    if primary.location_raw and primary.location_raw not in locs:
-        locs.insert(0, primary.location_raw)
-    cities = primary.extra.setdefault("cities", [])
-    first = primary.city or primary.location_raw
-    if first and _city_key(first) not in {_city_key(x) for x in cities}:
-        cities.append(first)
-    second = other.city or other.location_raw
-    if second and _city_key(second) not in {_city_key(x) for x in cities}:
-        cities.append(second)
-        if other.location_raw and other.location_raw not in locs:
-            locs.append(other.location_raw)
-    if len(locs) <= 1:
-        primary.extra.pop("locations", None)
     for u in other.urls:
         if u not in primary.urls:
             primary.urls.append(u)
@@ -81,6 +67,21 @@ def _merge_into(primary: Job, other: Job) -> None:
             primary.emails.append(e)
     for k, v in other.extra.items():
         primary.extra.setdefault(k, v)
+    # Locations: one entry per distinct city, judged after the primary has borrowed the other's parsed city.
+    locs = primary.extra.setdefault("locations", [])
+    if primary.location_raw and primary.location_raw not in locs:
+        locs.insert(0, primary.location_raw)
+    cities = primary.extra.setdefault("cities", [])
+    first = primary.city or primary.location_raw
+    if first and _city_key(first) not in {_city_key(x) for x in cities}:
+        cities.append(first)
+    second = other.city or other.location_raw
+    if second and _city_key(second) not in {_city_key(x) for x in cities}:
+        cities.append(second)
+        if other.location_raw and other.location_raw not in locs:
+            locs.append(other.location_raw)
+    if len(locs) <= 1:
+        primary.extra.pop("locations", None)
 
 
 def merge_jobs(jobs: list[Job]) -> list[Job]:
