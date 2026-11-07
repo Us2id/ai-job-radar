@@ -11,6 +11,8 @@ flag **fake, scam and ghost postings**, and get everything in one **Excel workbo
   free-mail applications, unnamed company, brand-new domain, evergreen wording, long open, reposted,
   missing from the employer's own board, and more.
 - Defaults: last **7 days**, **India**, **tech** (no domain filter). Every default is a flag.
+- Any country: a world gazetteer reads city, state and country text, and AI/ML titles are recognised in
+  English, German, French, Spanish, Portuguese, Italian, Dutch, Japanese, Chinese and Korean.
 - Works as a plain command line tool and as a **Claude Code skill** (`/ai-job-radar`).
 
 ## Quick start
