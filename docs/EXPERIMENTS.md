@@ -11,7 +11,7 @@ from those runs; they will drift. "Adopt" is a recommendation, not a decision.
 | 4 | Scam-text classifier | Learned signal from the EMSCAD dataset (17,880 postings, 866 fraudulent), exported to plain JSON, no new dependency | 5-fold CV AUC 0.988; precision 0.97 at recall 0.71 (threshold 0.85); 0.8 MB model | trained on 2012-2014 Western postings; used only as a weak −12/−25 signal | adopt |
 | 5 | Salary normalisation | "8-12 LPA", "₹ 12,000 /month", "$120K-$180K" → annual range + approximate INR for sorting | 12/12 hand cases pass | fixed exchange rates (approximate) | adopt |
 | 6 | "New this run" sheet | Only openings never seen before, the daily-reading sheet | trivial; verified on repeat runs | none | adopt |
-| 7 | `schedule install --at 08:00` | Daily run via macOS launchd (cron line on Linux) | see below | needs the laptop awake at that time | adopt |
+| 7 | `schedule install --at 08:00` | Daily run via macOS launchd (cron line on Linux) | install / status / uninstall verified against a throw-away home: plist written, loaded, listed, removed; two bugs found and fixed in testing (a wrong relative import; the `--at` value leaking into the run arguments) | needs the laptop awake at that time | adopt |
 | 8 | Live-link check for job-site postings | One GET per link, detects "no longer accepting applications" | LinkedIn 20/20 and Naukri 20/20 fetchable, Glassdoor blocked (403); 0 closed among week-old postings | ~2 s per link; low value inside a 7-day window | optional flag, capped |
 | 9 | Foundit, Shine, Hirist, Cutshort, iimjobs, TimesJobs, hiring.cafe | More Indian boards / a career-page aggregator | Foundit refuses non-browser clients; Shine, Hirist, Cutshort, iimjobs render with JavaScript and expose no public JSON; TimesJobs TLS fails; hiring.cafe sits behind Cloudflare | would need a headless browser and would violate their terms | do not add |
 
@@ -56,3 +56,11 @@ from those runs; they will drift. "Adopt" is a recommendation, not a decision.
 - Shine, Hirist, Cutshort, iimjobs: JavaScript-rendered pages with no public JSON in the HTML.
 - TimesJobs: TLS handshake fails from this machine.
 - hiring.cafe: Cloudflare challenge page for any automated client.
+
+### 7. Scheduler
+
+- `schedule install --at 07:30 --days 3 --country Germany` wrote `~/Library/LaunchAgents/io.github.us2id.ai-job-radar.plist`
+  with `StartCalendarInterval 07:30` and the run arguments `--days 3 --country Germany`, loaded it with launchctl;
+  `schedule status` printed it; `schedule uninstall` unloaded and removed it, leaving no launchd job behind.
+- Tested with `HOME` pointed at a scratch directory so nothing was scheduled on the real account.
+- On Linux the command prints the crontab line instead of installing it.

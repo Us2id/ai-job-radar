@@ -138,8 +138,21 @@ def cmd_schedule(a: argparse.Namespace) -> int:
     from . import schedule
 
     if a.action == "install":
-        hh, mm = (a.at or "08:00").split(":")
-        print(schedule.install(int(hh), int(mm), a.run_args or []))
+        # argparse.REMAINDER swallows everything after the action, including our own --at; pull it back out.
+        at, run_args, rest = a.at or "08:00", [], list(a.run_args or [])
+        if rest and rest[0] == "--":
+            rest = rest[1:]
+        i = 0
+        while i < len(rest):
+            if rest[i] == "--at" and i + 1 < len(rest):
+                at, i = rest[i + 1], i + 2
+            elif rest[i].startswith("--at="):
+                at, i = rest[i].split("=", 1)[1], i + 1
+            else:
+                run_args.append(rest[i])
+                i += 1
+        hh, mm = at.split(":")
+        print(schedule.install(int(hh), int(mm), run_args))
     elif a.action == "uninstall":
         print(schedule.uninstall())
     else:

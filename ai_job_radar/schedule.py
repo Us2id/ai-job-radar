@@ -9,7 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from ..pipeline.store import default_home
+from .pipeline.store import default_home
 
 LABEL = "io.github.us2id.ai-job-radar"
 
