@@ -251,3 +251,21 @@ def test_guessed_website_does_not_trigger_the_new_domain_penalty():
     score_all([guessed, verified], now)
     assert not any("registered only" in f for f in guessed.flags) and "guessed" in guessed.verification_notes
     assert any("registered only" in f for f in verified.flags)
+
+
+def test_repeat_run_skips_recent_nothing_found_markers(tmp_path):
+    """A second run must not crash on the 'none:<date>' marker the first run cached (naive vs aware datetimes)."""
+    from ai_job_radar.http import Http
+    from ai_job_radar.pipeline.enrich import Enricher
+    from ai_job_radar.pipeline.store import Store
+    store = Store(tmp_path / "t.sqlite")
+    store.upsert_company("acme", name="Acme", wikidata="none:2026-11-07")
+    j = Job(title="ML Engineer", company="Acme", url="https://acme.com/1", source="greenhouse:acme")
+    j.company_norm = "acme"
+    e = Enricher(store, Http(), [], log=lambda *_: None, options={"no_web_lookups": True})
+    e._resolve_sizes([[j]])  # no web lookups configured: must return quietly
+    e.o["no_web_lookups"] = False
+    calls = []
+    e.http.get = lambda *a, **k: calls.append(a) or (_ for _ in ()).throw(RuntimeError("no network in tests"))
+    e._resolve_sizes([[j]])
+    assert calls == [], "a marker from today means: do not look this company up again"
