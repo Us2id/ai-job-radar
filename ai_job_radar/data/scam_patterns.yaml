@@ -43,7 +43,8 @@ scam:
     weight: -25
     reason: "Earn-per-day / no interview / no experience pitch"
     patterns:
-      - 'earn (up ?to|upto|rs\.?|₹|inr|\$|usd|€|£)'
+      - 'earn (up ?to |upto )?(rs\.?|₹|inr|\$|usd|€|£) ?\d'
+      - 'earn (up ?to|upto) \d[\d,.]* ?(k\b|lakh|lac|lpa|rs\b|₹|inr|\$|usd|€|£|per (day|week|month)|a (day|week|month)|/(day|week|month)|daily|weekly)'
       - '(per|a|every) (day|week) (income|earning|salary|payout)'
       - 'no interview'
       - 'no (experience|skills?|qualification) (required|needed|necessary)'
