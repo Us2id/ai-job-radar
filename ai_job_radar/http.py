@@ -90,6 +90,11 @@ class Http:
         now = time.monotonic()
         return {h: round(t - now) for h, t in self._blocked_until.items() if t > now}
 
+    def unblock(self, host: str) -> None:
+        """A lane that chose to wait out the Retry-After lifts the block itself."""
+        with self._lock:
+            self._blocked_until.pop(host, None)
+
     def is_blocked(self, host: str) -> bool:
         return self._blocked_until.get(host, 0.0) > time.monotonic()
 

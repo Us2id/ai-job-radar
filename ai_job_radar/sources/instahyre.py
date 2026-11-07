@@ -4,8 +4,10 @@ from __future__ import annotations
 import json
 import re
 import time
+from datetime import timedelta
 from concurrent.futures import ThreadPoolExecutor
 
+from ..http import RateLimited
 from ..models import Job, SourceStats
 from ..pipeline.relevance import relevance
 from ..text import html_to_text, parse_date
@@ -16,9 +18,26 @@ DEFAULT_SKILLS = ["machine learning", "deep learning", "NLP", "LLM", "generative
 _LD_RE = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.S)
 
 
-def _detail(ctx: RunContext, url: str) -> dict | None:
+MAX_WAITS = 4  # how many short rate-limit pauses one run will sit through for this site
+
+
+def _get(ctx: RunContext, url: str, waits: list[int], **kw):
+    """GET that sits out a short Retry-After (Instahyre answers bursts with 429 + ~40 s) a bounded number of times."""
+    while True:
+        try:
+            return ctx.http.get(url, **kw)
+        except RateLimited as e:
+            if waits[0] >= MAX_WAITS or e.retry_after > 120:
+                raise
+            waits[0] += 1
+            ctx.log(f"[instahyre] rate-limited, waiting {int(e.retry_after) + 1}s ({waits[0]}/{MAX_WAITS}) …")
+            time.sleep(e.retry_after + 1)
+            ctx.http.unblock(e.host)
+
+
+def _detail(ctx: RunContext, url: str, waits: list[int]) -> dict | None:
     try:
-        page = ctx.http.get(url, headers={"Accept": "text/html"}).text
+        page = _get(ctx, url, waits, headers={"Accept": "text/html"}).text
     except Exception:  # noqa: BLE001
         return None
     for block in _LD_RE.findall(page):
@@ -37,14 +56,18 @@ def fetch_instahyre(ctx: RunContext) -> SourceResult:
         stats.note = "skipped (Instahyre lists jobs in India)"
         return SourceResult([], stats)
     t0 = time.time()
-    ctx.http.set_host_interval("www.instahyre.com", 0.4)
+    ctx.http.set_host_interval("www.instahyre.com", 0.6)
+    ctx.http.set_host_concurrency("www.instahyre.com", 2)
     skills = ctx.opt("instahyre_skills") or DEFAULT_SKILLS
     pages = int(ctx.opt("instahyre_pages", 8))
     seen: dict[int, dict] = {}
+    waits = [0]
     for skill in skills:
         for page in range(pages):
             try:
-                d = ctx.http.get_json(API, params={"limit": 35, "offset": page * 35, "skills": skill}, headers={"Accept": "application/json"})
+                r = _get(ctx, API, waits, params={"limit": 35, "offset": page * 35, "skills": skill}, headers={"Accept": "application/json"})
+                r.raise_for_status()
+                d = ctx.http.decode_json(r)
             except Exception as e:  # noqa: BLE001
                 stats.errors.append(f"'{skill}' p{page}: {type(e).__name__}: {str(e)[:120]}")
                 break
@@ -52,11 +75,19 @@ def fetch_instahyre(ctx: RunContext) -> SourceResult:
                 seen.setdefault(o["id"], o)
             if not (d.get("meta") or {}).get("next"):
                 break
-    cands = []
+    cands, stale = [], 0
+    slack = ctx.prefilter_cutoff - timedelta(days=2)
     for o in seen.values():
         kw = " ".join(o.get("keywords") or [])
-        if relevance(o.get("title", ""), kw).score >= 45:
-            cands.append(o)
+        if relevance(o.get("title", ""), kw).score < 45:
+            continue
+        # The listing carries the date the posting was last reviewed; a review older than the window means the
+        # posting is older too, so its detail page (one request each) is not worth fetching.
+        reviewed = parse_date(o.get("reviewed_at") or o.get("modified") or o.get("created"))
+        if reviewed and reviewed < slack:
+            stale += 1
+            continue
+        cands.append(o)
     cap = int(ctx.opt("instahyre_max_details", 1200))
     jobs: list[Job] = []
 
@@ -64,7 +95,7 @@ def fetch_instahyre(ctx: RunContext) -> SourceResult:
         url = o.get("public_url") or ""
         if not url:
             return None
-        ld = _detail(ctx, url)
+        ld = _detail(ctx, url, waits)
         if ld is None:
             return None
         posted = parse_date(ld.get("datePosted")) if ld else None
@@ -91,11 +122,11 @@ def fetch_instahyre(ctx: RunContext) -> SourceResult:
             job.extra["workplace_type"] = "remote"
         return job
 
-    with ThreadPoolExecutor(max_workers=4) as ex:
+    with ThreadPoolExecutor(max_workers=2) as ex:
         for job in ex.map(build, cands[:cap]):
             if job:
                 jobs.append(job)
     stats.fetched = len(jobs)
     stats.seconds = time.time() - t0
-    stats.note = f"{len(seen)} listed, {len(cands)} AI-relevant, {min(len(cands), cap)} detail pages read"
+    stats.note = f"{len(seen)} listed, {len(cands) + stale} AI-relevant, {stale} older than the window by their review date, {min(len(cands), cap)} detail pages read, {waits[0]} rate-limit pauses"
     return SourceResult(jobs, stats)

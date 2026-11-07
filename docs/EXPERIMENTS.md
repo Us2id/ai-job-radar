@@ -64,3 +64,13 @@ from those runs; they will drift. "Adopt" is a recommendation, not a decision.
   `schedule status` printed it; `schedule uninstall` unloaded and removed it, leaving no launchd job behind.
 - Tested with `HOME` pointed at a scratch directory so nothing was scheduled on the real account.
 - On Linux the command prints the crontab line instead of installing it.
+
+### 1. Instahyre: rate limits and what was tried against them
+
+- A second run a few hours after the first was answered with HTTP 429 (Retry-After ~40 s) from the first page
+  of most searches: the site's per-IP quota remembers the earlier run's ~1,000 detail-page requests.
+- The lane now sits out up to four short Retry-After pauses per run, fetches detail pages two at a time with
+  0.6 s between requests, and (when the listing ever carries a `reviewed_at`) skips postings reviewed before the
+  window. The listing's `reviewed_at` is empty in practice, so one detail request per AI-relevant listing is
+  still the cost of a posting date; the sitemap (which would carry dates for free) sits behind a Cloudflare
+  challenge, so it was not used.
