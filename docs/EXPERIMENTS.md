@@ -8,8 +8,8 @@ from those runs; they will drift. "Adopt" is a recommendation, not a decision.
 | 1 | Instahyre lane (India) | Direct-employer postings with company size and website from the employer, posting date and description from the page's JobPosting markup | see below | ~0.4 s per request, ~5 min per run; one site's public API | adopt for India |
 | 2 | Internshala lane (India) | AI/ML internships with stipend, duration, posting date | see below | HTML parsing (may break on redesign); many unpaid WFH postings from tiny orgs, where the scam scoring earns its keep | adopt, off by default unless internships wanted |
 | 3 | HN "Who is hiring" lane | Monthly thread, mostly remote/global startups, direct employers | 206 comments in the Nov 2026 thread, 55 AI-relevant, 11 open to India/worldwide, all within 7 days of thread start | one API, free, tiny | adopt |
-| 4 | Scam-text classifier | Learned signal from the EMSCAD dataset (17,880 postings, 866 fraudulent), exported to plain JSON, no new dependency | 5-fold CV AUC 0.988; precision 0.97 at recall 0.71 (threshold 0.85); 0.8 MB model | trained on 2012-2014 Western postings; used only as a weak −12/−25 signal | adopt |
-| 5 | Salary normalisation | "8-12 LPA", "₹ 12,000 /month", "$120K-$180K" → annual range + approximate INR for sorting | 12/12 hand cases pass | fixed exchange rates (approximate) | adopt |
+| 4 | Scam-text classifier | Learned signal from the EMSCAD dataset (17,880 postings, 866 fraudulent), exported to plain JSON, no new dependency | 5-fold CV AUC 0.988 on its own data, but on the full India run (1,737 openings, 821 with a long description) the highest probability was 0.56 and no posting crossed the 0.85 flag line; the 70 heuristically flagged rows all scored below 0.5 | trained on 2012-2014 Western postings; 0.8 MB of data; used only as a weak −12/−25 signal | optional: no false flags, but no evidence it finds anything the rules miss on real Indian AI postings |
+| 5 | Salary normalisation | "8-12 LPA", "₹ 12,000 /month", "$120K-$180K" → annual range + approximate INR for sorting | 12/12 hand cases pass; parsed a salary for 416 of 1,737 openings in the full India run (24%) | fixed exchange rates (approximate) | adopt |
 | 6 | "New this run" sheet | Only openings never seen before, the daily-reading sheet | trivial; verified on repeat runs | none | adopt |
 | 7 | `schedule install --at 08:00` | Daily run via macOS launchd (cron line on Linux) | install / status / uninstall verified against a throw-away home: plist written, loaded, listed, removed; two bugs found and fixed in testing (a wrong relative import; the `--at` value leaking into the run arguments) | needs the laptop awake at that time | adopt |
 | 8 | Live-link check for job-site postings | One GET per link, detects "no longer accepting applications" | LinkedIn 20/20 and Naukri 20/20 fetchable, Glassdoor blocked (403); 0 closed among week-old postings | ~2 s per link; low value inside a 7-day window | optional flag, capped |
@@ -74,3 +74,19 @@ from those runs; they will drift. "Adopt" is a recommendation, not a decision.
   window. The listing's `reviewed_at` is empty in practice, so one detail request per AI-relevant listing is
   still the cost of a posting date; the sitemap (which would carry dates for free) sits behind a Cloudflare
   challenge, so it was not used.
+
+### 4. Scam-text classifier on the full India run
+
+- Replayed the full India run (15,866 raw postings, 1,737 openings in the window) through this branch with the
+  classifier on. 821 openings had a description long enough to score. Probabilities: median 0.04, 95th percentile
+  0.13, maximum 0.56 (a "Chemical Engineer - Data Science" posting). Nothing reached the 0.85 threshold, so the
+  model changed no score. None of the 70 openings carrying a heuristic flag (reposts, same title in many cities,
+  missing from the employer's board, unnamed company) scored above 0.5: those are ghost-job signals, not the
+  "pay a registration fee" scams the model was trained on.
+- Conclusion: harmless, cheap to keep, but on a week of real Indian AI postings it found nothing the rules missed.
+
+### Overlap of the new lanes with the default lanes (same day, same window)
+
+- Instahyre: 58 openings in the window, 53 of them absent from the 1,171-row default run (employer-posted roles
+  at Meesho, InMobi, Cognizant, Myntra, PepsiCo, Moveworks and others that never reached LinkedIn/Naukri).
+- Internshala + HN: 38 openings, all absent from the default run (37 internships, 1 remote startup role).
