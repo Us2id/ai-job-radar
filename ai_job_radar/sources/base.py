@@ -20,11 +20,18 @@ class Board:
     url: str = ""
     website: str | None = None
     countries: list[str] = field(default_factory=list)  # ISO2 hints, may be empty
+    linkedin: str | None = None
     origin: str = "curated"  # curated | openjobs | discovered | user
 
     @property
     def id(self) -> str:
         return f"{self.platform}:{self.slug}"
+
+
+def window_cutoff(now: datetime, days: int) -> datetime:
+    """Start of the day N days before `now` (UTC): a 7-day window on 11 Nov covers 4-11 Nov inclusive,
+    and sources that only give a date never fall out of the window because of the time of day."""
+    return (now - timedelta(days=days)).replace(hour=0, minute=0, second=0, microsecond=0)
 
 
 @dataclass
@@ -43,7 +50,7 @@ class RunContext:
 
     @property
     def cutoff(self) -> datetime:
-        return self.now - timedelta(days=self.days)
+        return window_cutoff(self.now, self.days)
 
     @property
     def prefilter_cutoff(self) -> datetime:

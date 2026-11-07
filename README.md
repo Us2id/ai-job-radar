@@ -58,10 +58,13 @@ Last verified live, Times seen, Also listed at, Description (start), Review note
    Employer-board versions win over job-site copies.
 4. **Remember.** A SQLite database (`~/.ai-job-radar/radar.sqlite`) records when each opening was first
    seen. The window is applied to the *earliest* of the claimed posting date and the first-seen date, so
-   a job reposted every week is reported once and flagged as reposted.
+   a job reposted every week is reported once and flagged as reposted. The window is counted in whole
+   days: `--days 7` on 11 November means everything opened on or after 4 November.
 5. **Enrich.** Company website (from the posting, the board, or Clearbit autocomplete), domain registration
-   date (RDAP), size (job site data, Wikidata), LinkedIn page, and the company's public ATS board (probed
-   from its name). Job-site postings are cross-checked against the employer's own board.
+   date (RDAP), size (job-site data, then Wikidata in one batched query per 20 companies, then the English
+   Wikipedia infobox), LinkedIn page, and the company's public ATS board (probed from its name). Job-site
+   postings are cross-checked against the employer's own board. Lookups are cached in the database, so
+   coverage grows run by run.
 6. **Score.** Legitimacy starts at 58 and moves with the signals above; "asks for money" caps it at 30.
    Levels: Likely genuine (75+), Looks fine (55-74), Check before applying (35-54), Suspicious (<35).
    It is a signal with reasons, never a verdict.
@@ -103,7 +106,7 @@ crawl since Google indexes any page with JobPosting markup), `ADZUNA_APP_ID` + `
 
 ## Employer boards
 
-About 2,100 boards are bundled: a curated list of AI-hiring employers (`ai_job_radar/data/seeds/curated.yaml`)
+About 1,800 boards are bundled (dead boards were pruned, and any that disappear later are skipped automatically): a curated list of AI-hiring employers (`ai_job_radar/data/seeds/curated.yaml`)
 and the OpenJobs company dataset with hiring-country hints. By default a run scans boards that hint at
 the requested country plus boards with no hint; `--all-boards` scans everything.
 
@@ -122,6 +125,10 @@ or list URLs in `~/.ai-job-radar/boards.yaml` (`- {name: X, url: https://boards.
   with a key, Google's job index. Employers that only post on their own custom portal and nowhere else
   are missed unless their board is on a supported ATS.
 - Job sites refresh "posted" dates on every repost. From the second run on, *First seen* is the honest date.
+- Hosts that answer HTTP 429 are left alone for the rest of the run (the Run log sheet says so) instead of
+  being hammered; Wikimedia in particular throttles anonymous clients hard, so company sizes fill in over
+  a few runs rather than all at once.
+- Boards that no longer exist (HTTP 404) are skipped for 30 days and listed once in the Run log.
 - Job-site scraping (LinkedIn, Indeed, Glassdoor, Naukri) is best effort: these sites rate-limit and
   block. Employer boards, remote boards and the keyed APIs are the stable part.
 - Company size is an estimate from whichever source had it; the *Size source* column says which.

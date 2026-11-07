@@ -34,7 +34,11 @@ ai-job-radar run --days 7 --country India --domain tech
   scanned slowly on purpose to avoid rate limits). Run it in the background and keep the user informed.
 - The output path is printed at the end: `output/ai-jobs_<country>_<domain>_<days>d_<date>.xlsx`.
 - The run is incremental: a local SQLite database remembers when each opening was first seen, so
-  repeat runs tell reposts from genuinely new openings.
+  repeat runs tell reposts from genuinely new openings. Company facts (website, size, domain age) are
+  cached too; Wikimedia rate-limits anonymous lookups, so a few company sizes may only fill in on the
+  next run.
+- The window is counted in whole days: `--days 7` on 11 November covers everything opened on or after
+  4 November.
 
 ## 3. Review the doubtful rows (bounded, optional but valuable)
 

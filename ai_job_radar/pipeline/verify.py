@@ -50,6 +50,37 @@ def _years_since(date_s: str | None, now: datetime) -> float | None:
     return (now - d).days / 365.25
 
 
+_NEGATION_RE = re.compile(
+    r"(?i)\b(never|not|no|won'?t|wouldn'?t|don'?t|doesn'?t|didn'?t|cannot|can'?t|without|free of|beware|fraud\w*|scam\w*|"
+    r"legitimate|caution|alert|red flag|warning|bogus|fake|impersonat\w*|phishing|suspicious)\b"
+)
+_SENTENCE_SPLIT_RE = re.compile(r"[.!?\n]")
+
+
+def _negated(text: str, start: int) -> bool:
+    """True when the sentence leading up to a match says the opposite: 'we will never ask you to pay a fee'."""
+    before = text[max(0, start - 220):start]
+    sentence = _SENTENCE_SPLIT_RE.split(before)[-1]
+    return bool(_NEGATION_RE.search(sentence))
+
+
+def _scam_hits(rxs: list, text: str) -> tuple[list[str], bool]:
+    """Patterns that really fired, and whether any match was inside an anti-fraud disclaimer instead."""
+    hits: list[str] = []
+    negated = False
+    for rx in rxs:
+        real = False
+        for m in rx.finditer(text):
+            if _negated(text, m.start()):
+                negated = True
+                continue
+            real = True
+            break
+        if real:
+            hits.append(rx.pattern)
+    return hits, negated
+
+
 def score_all(jobs: list[Job], now: datetime) -> None:
     """Scores every job in place. Needs the whole list to spot one title posted in many cities."""
     c, k = cfg(), compiled()
@@ -99,8 +130,10 @@ def score_all(jobs: list[Job], now: datetime) -> None:
             score += pos["size_known"]
 
         # ---- scam signals
+        anti_fraud_notice = False
         for s, rxs in k["scam"]:
-            hits = [rx.pattern for rx in rxs if rx.search(text)]
+            hits, negated = _scam_hits(rxs, text)
+            anti_fraud_notice = anti_fraud_notice or negated
             if s["id"] == "free_email_apply" and any(FREE_MAIL.search(e) for e in j.emails):
                 hits.append("emails field")
             if hits:
@@ -108,6 +141,10 @@ def score_all(jobs: list[Job], now: datetime) -> None:
                 flags.append(s["reason"])
                 if s.get("hard_cap") is not None:
                     hard_cap = min(hard_cap, int(s["hard_cap"]))
+
+        if anti_fraud_notice:
+            score += int(pos.get("anti_fraud_notice", 0))
+            notes.append("carries an anti-fraud notice (says it never asks for fees or personal data)")
 
         # ---- company name signals
         name = j.company or ""

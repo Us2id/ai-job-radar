@@ -10,6 +10,8 @@ from .base import Board, RunContext, SourceResult
 
 
 def _select_boards(boards: list[Board], ctx: RunContext) -> list[Board]:
+    skip = set(ctx.opt("skip_boards") or ())
+    boards = [b for b in boards if b.id not in skip]
     if ctx.opt("all_boards") or not ctx.country:
         return boards
     out = []
@@ -20,11 +22,26 @@ def _select_boards(boards: list[Board], ctx: RunContext) -> list[Board]:
     return out
 
 
+MISSING_MARKERS = ("404 Client Error", "JSONDecodeError", "TooManyRedirects", "410 Client Error")
+
+
+def classify_board_error(err: str) -> str:
+    """'missing' for boards that no longer exist, 'rate-limited', or 'error'."""
+    if any(m in err for m in MISSING_MARKERS):
+        return "missing"
+    if "rate-limited" in err or "429" in err:
+        return "rate-limited"
+    return "error"
+
+
 def fetch_boards(ctx: RunContext) -> SourceResult:
     stats = SourceStats("ats-boards")
     t0 = time.time()
     boards = _select_boards(ctx.boards, ctx)
+    skipped = len(set(ctx.opt("skip_boards") or ()) & {b.id for b in ctx.boards})
     stats.note = f"{len(boards)} of {len(ctx.boards)} boards selected for {ctx.country or 'any country'}"
+    if skipped:
+        stats.note += f" ({skipped} boards that were missing on a recent run are skipped for 30 days)"
     ctx.log(f"[ats] fetching {len(boards)} boards ({len(FETCHERS)} platforms) …")
     jobs: list[Job] = []
     per_platform: dict[str, int] = {}

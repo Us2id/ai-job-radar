@@ -10,7 +10,7 @@ from ..geo import JOBSPY_COUNTRIES
 from ..models import Job, SourceStats
 from .base import RunContext, SourceResult
 
-JOB_SITE_HOSTS = ("naukri.com", "glassdoor.", "indeed.com", "linkedin.com", "ziprecruiter.com", "bayt.com", "bdjobs.com", "hellowork.com", "google.com", "jooble.org", "adzuna.")
+from ..text import JOB_SITE_HOSTS
 
 MENA = {"AE", "SA", "QA", "KW", "BH", "OM", "EG", "JO", "LB", "MA", "TN", "DZ", "IQ", "YE", "LY", "SD", "PK"}
 

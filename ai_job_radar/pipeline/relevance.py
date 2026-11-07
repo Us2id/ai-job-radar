@@ -33,6 +33,7 @@ def _compiled() -> dict:
     return {
         "title_include": [(re.compile(p["re"], _FLAGS), int(p["w"])) for p in kw["title_include"]],
         "title_exclude": [re.compile(p, _FLAGS) for p in kw["title_exclude"]],
+        "title_soft_exclude": [re.compile(p, _FLAGS) for p in kw.get("title_soft_exclude", [])],
         "desc_hard": [re.compile(p, _FLAGS) for p in kw["desc_hard"]],
         "desc_soft": [re.compile(p, _FLAGS) for p in kw["desc_soft"]],
         "role_families": [(name, re.compile(p, _FLAGS)) for name, p in kw["role_families"].items()],
@@ -101,6 +102,8 @@ def relevance(title: str, description: str = "") -> Relevance:
     score = max(title_score, desc_score)
     if title_score and (hard or soft):
         score = min(100, score + min(8, 2 * (hard + soft)))
+    if not title_score and any(rx.search(title) for rx in c["title_soft_exclude"]):
+        score = min(score, 45)  # a non-AI title; the description alone cannot make it an AI job
     seen: set[str] = set()
     all_terms = []
     for t in terms + found:

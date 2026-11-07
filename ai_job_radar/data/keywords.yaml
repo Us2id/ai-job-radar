@@ -96,6 +96,22 @@ title_exclude:
   - '\bnurse\b|\bphysician\b|\bdoctor\b'
   - '\bchef\b|\bcook\b|\bhousekeep'
 
+# Titles that are not AI/ML roles unless the title itself says so. When one of these matches and the
+# title carries no AI/ML term, the description can lift the score to at most 45 (below the default
+# threshold of 50): a "Project Manager" whose posting mentions "AI" and "data-driven" is not an AI job.
+title_soft_exclude:
+  - '\b(project|program|programme|delivery|engagement|portfolio|release|change|office|operations|ops|facilities|community|client|customer|vendor|procurement|supply chain|category|brand|regional|branch|store|plant|site) (manager|lead|head|director|coordinator|owner|executive|analyst|specialist)\b'
+  - '\bproduct (manager|owner|lead|director|head|analyst|marketing)\b|\bPM\b|\bscrum master\b|\bagile coach\b'
+  - '\b(knowledge|content|document|documentation|communications?|learning|training|quality|compliance|risk|audit|finance|financial|billing|credit|collections|treasury|tax|legal|policy|security|safety|workplace|admin|administration|people|culture|rewards?|compensation|benefits|wellbeing)\s+(manager|lead|head|director|coordinator|executive|specialist|analyst|officer|associate|partner)\b'
+  - '\b(vice president|vp|svp|evp|avp|chief|cxo|ceo|coo|cfo|cmo|cro|general manager|managing director|country head|business head|chief of staff)\b'
+  - '\b(frontend|front-end|front end|ui|ux|ui/ux|web|mobile|ios|android|flutter|react(js| native)?|angular|vue(js)?|node(js)?|php|wordpress|shopify|salesforce|sap|servicenow|workday|oracle|peoplesoft|mainframe|cobol|abap|\.net|dotnet|c#|java|golang|ruby|rails|django|laravel|drupal|magento|unity|unreal|game|graphics|embedded|firmware|hardware|network|networking|devops|sre|site reliability|cloud|infrastructure|platform|database|dba|storage|systems?|support|helpdesk|it|desktop|qa|test|testing|automation|manual|performance|security|cyber)\s*(engineer|developer|programmer|architect|administrator|admin|lead|consultant|specialist|analyst)s?\b(?!.*\b(ai|ml|llm|nlp|machine learning|deep learning|computer vision|genai|generative|data science|mlops)\b)'
+  - '\b(product|ux|ui|ux/ui|ui/ux|visual|graphic|motion|brand|creative|interaction|experience|service)\s+designer\b'
+  - '\b(tax|legal|audit|compliance|finance|financial|accounting|procurement|treasury|payroll|workspace|facilities|admin|administrative|real estate|events?)\b'
+  - '\b(creator|influencer|brand|social|community|editorial|public relations|communications?)\b'
+  - '\bprofessional services\b|\bimplementation (consultant|specialist|manager)\b|\bsolutions? consultant\b|\bpre-?sales\b|\bcustomer (engineer|architect)\b|\btechnical account manager\b'
+  - '\bSDET\b|\bsoftware development engineer in test\b|\bquality (engineer|analyst|assurance)\b|\bautomation (engineer|tester|test)\b|\btest (lead|analyst|architect|automation)\b|\bin test\b'
+  - '\bengineering (manager|head|director)\b(?!.*\b(ai|ml|llm|nlp|machine learning|deep learning|computer vision|genai|generative|data science|mlops|data|research|model|agents?)\b)'
+
 # Description terms for titles that are not explicit (e.g. "Software Engineer").
 # 'hard' terms are specific to ML work; 'soft' terms appear in boilerplate too ("we use AI").
 # A generic title needs at least two distinct hard terms (or one hard term plus several soft ones)

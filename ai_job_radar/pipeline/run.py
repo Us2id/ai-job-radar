@@ -16,10 +16,10 @@ from ..models import Job, SourceStats, job_from_dict, job_to_dict
 from ..seeds import load_boards
 from ..sources.apis import fetch_adzuna, fetch_google_jobs, fetch_jooble
 from ..sources.base import RunContext
-from ..sources.boards import fetch_boards
+from ..sources.boards import classify_board_error, fetch_boards
 from ..sources.jobspy_source import fetch_jobspy
 from ..sources.remote_boards import fetch_remoteok, fetch_remotive
-from ..text import extract_experience, normalize_company
+from ..text import clean_company_name, extract_experience, fix_mojibake, normalize_company
 from .dedup import merge_jobs
 from .enrich import Enricher
 from .excel import ABOUT, write_workbook
@@ -119,6 +119,24 @@ def _country_ok(job: Job, cc: str | None, gaz) -> tuple[bool, str | None]:
     return False, None
 
 
+def summarize_errors(errors: list[str]) -> list[str]:
+    """Boards that no longer exist are listed once, compactly; everything else is kept verbatim (up to 150 lines)."""
+    missing, rate, other = [], [], []
+    for e in errors:
+        e = e.removeprefix("(original) ")
+        kind = classify_board_error(e)
+        (missing if kind == "missing" else rate if kind == "rate-limited" else other).append(e)
+    out: list[str] = []
+    if missing:
+        ids = [e.split(": ", 1)[0] for e in missing]
+        out.append(f"{len(missing)} boards no longer exist (HTTP 404 / empty); they are skipped for 30 days: " + ", ".join(ids[:80]) + (" …" if len(ids) > 80 else ""))
+    if rate:
+        ids = [e.split(": ", 1)[0] for e in rate]
+        out.append(f"{len(rate)} boards were rate-limited and skipped this run: " + ", ".join(ids[:40]) + (" …" if len(ids) > 40 else ""))
+    out += other[:150]
+    return out
+
+
 def run(cfg: RunConfig) -> RunSummary:
     log = _log_factory(cfg.quiet)
     t_start = time.time()
@@ -148,8 +166,16 @@ def run(cfg: RunConfig) -> RunSummary:
                 if t not in terms:
                     terms.append(t)
     http = Http(timeout=25)
-    http.set_host_interval("www.wikidata.org", 0.35)
+    # Wikimedia asks clients to go easy; parallel bursts earn an HTTP 429 that costs the whole lookup lane.
+    http.set_host_interval("www.wikidata.org", 1.0)
+    http.set_host_concurrency("www.wikidata.org", 1)
+    http.set_host_interval("en.wikipedia.org", 1.2)
+    http.set_host_concurrency("en.wikipedia.org", 1)
     http.set_host_interval("autocomplete.clearbit.com", 0.2)
+    http.set_host_concurrency("rdap.org", 1)
+    http.set_host_interval("rdap.org", 1.0)  # the fallback redirector sits behind Cloudflare and answers bursts with 429
+    http.set_host_concurrency("rdap.verisign.com", 4)
+    http.set_host_interval("www.workable.com", 0.3)
     boards = load_boards(include_openjobs=not cfg.no_openjobs, extra_files=cfg.boards_files)
     if cfg.limit_boards:
         boards = boards[: cfg.limit_boards]
@@ -165,6 +191,9 @@ def run(cfg: RunConfig) -> RunSummary:
     params = {"days": cfg.days, "country": cfg.country, "country_code": cc, "domain": cfg.domain, "lanes": cfg.lanes,
               "terms": terms, "deep": cfg.deep, "min_relevance": cfg.min_relevance, "version": __version__}
     run_id = store.start_run(params)
+    skip_boards = store.boards_with_status("missing", 30)
+    if skip_boards:
+        options["skip_boards"] = skip_boards
 
     # ------------------------------------------------------------------ fetch all lanes concurrently
     lane_fns = {
@@ -200,10 +229,23 @@ def run(cfg: RunConfig) -> RunSummary:
                 results.append(__import__("ai_job_radar.sources.base", fromlist=["SourceResult"]).SourceResult([], st))
     raw: list[Job] = [j for r in results for j in r.jobs]
     stats = [r.stats for r in results]
+    for j in raw:  # repair mojibake and board-style company names from any lane
+        j.title = fix_mojibake(j.title)
+        j.description = fix_mojibake(j.description)
+        j.company = clean_company_name(j.company)
+    ats_stats = next((s for s in stats if s.name == "ats-boards"), None)
+    if ats_stats and not cfg.from_raw:
+        marks = []
+        for e in ats_stats.errors:
+            bid, _, msg = e.partition(": ")
+            if ":" in bid and classify_board_error(msg) == "missing":
+                marks.append((bid, "missing", msg))
+        if marks:
+            store.mark_boards(marks, now)
     log(f"[pipeline] {len(raw)} raw postings from {len(results)} lanes")
     raw_dir = default_home() / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
-    raw_path = raw_dir / f"raw_run{run_id}.json.gz"
+    raw_path = raw_dir / f"raw_{Path(store.path).stem}_run{run_id}_{now.strftime('%Y%m%d-%H%M%S')}.json.gz"
     if not cfg.from_raw:
         import gzip
         with gzip.open(raw_path, "wt", encoding="utf-8") as fh:
@@ -310,6 +352,8 @@ def run(cfg: RunConfig) -> RunSummary:
         "seconds": int(time.time() - t_start),
     }
     errors = [e for s in stats for e in s.errors]
+    error_summary = summarize_errors(errors)
+    rate_notes = list(http.blocked_log)
     out = Path(cfg.out) if cfg.out else Path("output") / f"ai-jobs_{(cc or 'any').lower()}_{re.sub(r'[^a-z0-9]+', '-', (cfg.domain or 'any').lower()).strip('-') or 'any'}_{cfg.days}d_{now.strftime('%Y-%m-%d')}.xlsx"
     run_log = {
         "Generated": now.strftime("%Y-%m-%d %H:%M UTC"), "Tool": f"ai-job-radar v{__version__}", "Window": f"last {cfg.days} days (opened on or after {ctx.cutoff.date().isoformat()})",
@@ -317,12 +361,13 @@ def run(cfg: RunConfig) -> RunSummary:
         "Lanes": ", ".join(cfg.lanes), "Boards scanned": next((s.note for s in stats if s.name == "ats-boards"), ""),
         "Counts": {k: v for k, v in counts.items() if k not in ("dropped", "by_source", "risk_levels")},
         "Dropped before merge": dropped, "Fetched per source": counts["by_source"], "Kept per source": counts["kept_by_source"], "Risk levels (in window)": counts["risk_levels"],
-        "Source notes": [f"{s.name}: fetched={s.fetched} time={s.seconds:.0f}s {s.note}".strip() for s in stats],
-        "Errors": errors[:200] or ["none"], "Database": str(store.path),
+        "Source notes": [f"{s.name}: fetched={s.fetched} time={s.seconds:.0f}s {s.note}".strip() for s in stats] + rate_notes,
+        "Errors": error_summary or ["none"], "Database": str(store.path),
     }
     write_workbook(out, in_window, flagged, list(companies.values()), run_log, ABOUT)
     store.save_run_jobs(run_id, merged)
     store.finish_run(run_id, counts, errors, str(out))
     store.close()
-    log(f"[done] {len(in_window)} openings → {out}  ({counts['seconds']}s, {len(errors)} source errors)")
+    n_missing = sum(1 for e in errors if classify_board_error(e) == "missing")
+    log(f"[done] {len(in_window)} openings → {out}  ({counts['seconds']}s, {len(errors) - n_missing} source errors, {n_missing} boards no longer exist)")
     return RunSummary(out, run_id, counts, stats, in_window, flagged)

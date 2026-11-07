@@ -5,7 +5,7 @@ import json
 import os
 import sqlite3
 import threading
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from ..models import Job, job_from_dict, job_to_dict
@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS runs (
 );
 CREATE TABLE IF NOT EXISTS run_jobs (run_id INTEGER, key TEXT, data TEXT, PRIMARY KEY (run_id, key));
 CREATE TABLE IF NOT EXISTS kv (k TEXT PRIMARY KEY, v TEXT);
+CREATE TABLE IF NOT EXISTS board_status (board_id TEXT PRIMARY KEY, status TEXT, note TEXT, checked_at TEXT);
 """
 
 
@@ -87,6 +88,22 @@ class Store:
     @_locked
     def known_job_count(self) -> int:
         return int(self.db.execute("SELECT COUNT(*) FROM jobs").fetchone()[0])
+
+    # ------------------------------------------------------------------ boards
+    @_locked
+    def mark_boards(self, entries: list[tuple[str, str, str]], now: datetime) -> None:
+        """entries: (board_id, status, note). Status 'missing' boards are skipped for 30 days, then probed again."""
+        self.db.executemany(
+            "INSERT OR REPLACE INTO board_status (board_id, status, note, checked_at) VALUES (?, ?, ?, ?)",
+            [(bid, st, note[:200], now.isoformat()) for bid, st, note in entries],
+        )
+        self.db.commit()
+
+    @_locked
+    def boards_with_status(self, status: str, max_age_days: int = 30) -> set[str]:
+        since = (datetime.now(timezone.utc) - timedelta(days=max_age_days)).isoformat()
+        rows = self.db.execute("SELECT board_id FROM board_status WHERE status=? AND checked_at >= ?", (status, since)).fetchall()
+        return {r[0] for r in rows}
 
     # ------------------------------------------------------------------ companies
     @_locked

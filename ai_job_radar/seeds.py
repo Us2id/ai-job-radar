@@ -10,6 +10,7 @@ import yaml
 from .pipeline.store import default_home
 from .sources.ats import board_from_url
 from .sources.base import Board
+from .text import split_company_links
 
 
 def _pkg_data(name: str) -> Path:
@@ -25,11 +26,15 @@ def load_boards(include_openjobs: bool = True, extra_files: list[str | Path] | N
     boards: dict[str, Board] = {}
 
     def add(b: Board | None) -> None:
+        if b:
+            b.website, li = split_company_links(b.website)
+            b.linkedin = b.linkedin or li
         if b and b.id not in boards:
             boards[b.id] = b
         elif b:
             cur = boards[b.id]
             cur.website = cur.website or b.website
+            cur.linkedin = cur.linkedin or b.linkedin
             for c in b.countries:
                 if c not in cur.countries:
                     cur.countries.append(c)

@@ -7,12 +7,13 @@ early so large boards stay cheap.
 from __future__ import annotations
 
 import re
+import time
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlsplit
 
 from ..models import Job
 from ..pipeline.relevance import relevance
-from ..text import html_to_text, parse_date
+from ..text import clean_company_name, html_to_text, parse_date, split_company_links
 from .base import Board, RunContext
 
 
@@ -20,7 +21,10 @@ def _mk(board: Board, ctx: RunContext, **kw) -> Job:
     kw.setdefault("source", board.id)
     kw.setdefault("ats", board.platform)
     kw.setdefault("company", board.name)
-    kw.setdefault("company_website", board.website)
+    kw["company"] = clean_company_name(kw.get("company")) or board.name
+    website, linkedin = split_company_links(kw.get("company_website") or board.website)
+    kw["company_website"] = website
+    kw.setdefault("company_linkedin", linkedin or board.linkedin)
     kw.setdefault("posted_trusted", True)
     kw.setdefault("poster_type", "direct")
     job = Job(**kw)
@@ -30,6 +34,11 @@ def _mk(board: Board, ctx: RunContext, **kw) -> Job:
 
 def _fresh(ctx: RunContext, dt: datetime | None) -> bool:
     return dt is None or dt >= ctx.prefilter_cutoff
+
+
+def _deadline(ctx: RunContext) -> float:
+    """Monotonic time after which a board fetcher returns what it has (default 150 s per board)."""
+    return time.monotonic() + float(ctx.opt("board_deadline", 150))
 
 
 def _title_worth_detail(title: str) -> bool:
@@ -156,7 +165,10 @@ def fetch_smartrecruiters(board: Board, ctx: RunContext) -> list[Job]:
             break
     out = []
     cap = int(ctx.opt("max_detail_per_board", 80))
+    deadline = _deadline(ctx)
     for j, posted in fresh[:cap]:
+        if time.monotonic() > deadline:
+            break
         loc = j.get("location") or {}
         loc_s = ", ".join(x for x in [loc.get("city"), loc.get("region"), loc.get("country")] if x)
         if loc.get("remote"):
@@ -188,6 +200,52 @@ def fetch_smartrecruiters(board: Board, ctx: RunContext) -> list[Job]:
 
 # ----------------------------------------------------------------------------- Workable
 def fetch_workable(board: Board, ctx: RunContext) -> list[Job]:
+    """Workable's widget endpoint returns every published job with its description in one call.
+
+    The newer apply.workable.com API needs one request per posting and rate-limits anonymous clients
+    hard (HTTP 429 with a Retry-After of many hours), so it is only used when the widget is unavailable.
+    """
+    r = ctx.http.get(f"https://www.workable.com/api/accounts/{board.slug}", params={"details": "true"}, timeout=30)
+    if r.status_code == 404:
+        r.raise_for_status()
+    if r.status_code == 200:
+        data = ctx.http.decode_json(r)
+        if isinstance(data, dict) and isinstance(data.get("jobs"), list):
+            return _workable_widget_jobs(board, ctx, data)
+    return _fetch_workable_apply_api(board, ctx)
+
+
+def _workable_widget_jobs(board: Board, ctx: RunContext, data: dict) -> list[Job]:
+    out = []
+    company = data.get("name") or board.name
+    for j in data["jobs"]:
+        posted = parse_date(j.get("published_on")) or parse_date(j.get("created_at"))
+        if not _fresh(ctx, posted):
+            continue
+        loc_s = ", ".join(x for x in [j.get("city"), j.get("state"), j.get("country")] if x)
+        locs = j.get("locations") if isinstance(j.get("locations"), list) else []
+        if len(locs) > 1:
+            loc_s = "; ".join(", ".join(x for x in [l.get("city"), l.get("region"), l.get("country")] if x) for l in locs if isinstance(l, dict)) or loc_s
+        remote = str(j.get("telecommuting", "")).lower() == "true" or (j.get("workplace") == "remote")
+        if remote:
+            loc_s = f"Remote, {loc_s}" if loc_s else "Remote"
+        job = _mk(
+            board, ctx,
+            title=j.get("title", ""), url=j.get("url") or f"https://apply.workable.com/{board.slug}/j/{j.get('shortcode')}/",
+            apply_url=j.get("application_url"), location_raw=loc_s, description=html_to_text(j.get("description")),
+            posted_at=posted, job_id=j.get("shortcode"), employment_type=j.get("employment_type"), company=company,
+            company_industry=j.get("industry") or None,
+        )
+        if remote:
+            job.extra["workplace_type"] = "remote"
+        for k in ("department", "function", "experience", "education"):
+            if j.get(k):
+                job.extra[k] = j[k]
+        out.append(job)
+    return out
+
+
+def _fetch_workable_apply_api(board: Board, ctx: RunContext) -> list[Job]:
     url = f"https://apply.workable.com/api/v3/accounts/{board.slug}/jobs"
     payload = {"query": "", "location": [], "department": [], "worktype": [], "remote": []}
     fresh, token, pages = [], None, 0
@@ -204,7 +262,10 @@ def fetch_workable(board: Board, ctx: RunContext) -> list[Job]:
             break
     out = []
     cap = int(ctx.opt("max_detail_per_board", 80))
+    deadline = _deadline(ctx)
     for j, posted in fresh[:cap]:
+        if time.monotonic() > deadline:
+            break
         loc = j.get("location") or {}
         loc_s = ", ".join(x for x in [loc.get("city"), loc.get("region"), loc.get("country")] if x)
         if j.get("remote") or (j.get("workplace") == "remote"):
@@ -267,7 +328,10 @@ def fetch_bamboohr(board: Board, ctx: RunContext) -> list[Job]:
     data = ctx.http.get_json(f"https://{board.slug}.bamboohr.com/careers/list")
     out = []
     cap = int(ctx.opt("max_detail_per_board", 80))
+    deadline = _deadline(ctx)
     for j in (data.get("result") or [])[:400]:
+        if time.monotonic() > deadline:
+            break
         title = j.get("jobOpeningName", "")
         if not _title_worth_detail(title):
             continue
@@ -337,9 +401,10 @@ def fetch_workday(board: Board, ctx: RunContext) -> list[Job]:
     api = f"https://{host}/wday/cxs/{tenant}/{site}/jobs"
     terms = ctx.opt("workday_terms") or ["machine learning", "artificial intelligence", "data scientist", "deep learning"]
     seen: dict[str, dict] = {}
+    deadline = _deadline(ctx)
     for term in terms:
         offset = 0
-        while offset < int(ctx.opt("workday_max_per_term", 100)):
+        while offset < int(ctx.opt("workday_max_per_term", 100)) and time.monotonic() < deadline:
             data = ctx.http.post_json(api, {"appliedFacets": {}, "limit": 20, "offset": offset, "searchText": term})
             posts = data.get("jobPostings") or []
             for p in posts:
@@ -357,6 +422,8 @@ def fetch_workday(board: Board, ctx: RunContext) -> list[Job]:
     strong = [(path, p) for path, p in seen.items() if relevance(p.get("title", "")).score >= 40]
     generic = [(path, p) for path, p in seen.items() if (path, p) not in strong and _title_worth_detail(p.get("title", ""))]
     for path, p in strong[:cap] + generic[: max(0, min(20, cap - len(strong)))]:
+        if time.monotonic() > deadline:
+            break
         title = p.get("title", "")
         detail = {}
         try:

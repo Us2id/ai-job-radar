@@ -164,3 +164,106 @@ def root_domain(domain: str | None) -> str | None:
     if parts[-2] in _SECOND_LEVEL and len(parts[-1]) == 2:
         return ".".join(parts[-3:])
     return ".".join(parts[-2:])
+
+
+# ----------------------------------------------------------------------------- company links and names
+# Hosts that are job sites or ATS vendors: a "website" on one of these is not the employer's own site.
+JOB_SITE_HOSTS = (
+    "naukri.com", "glassdoor.", "indeed.com", "linkedin.com", "ziprecruiter.com", "bayt.com", "bdjobs.com",
+    "hellowork.com", "google.com", "jooble.org", "adzuna.", "instahyre.com", "internshala.com", "foundit.", "monster.",
+    "greenhouse.io", "lever.co", "ashbyhq.com", "smartrecruiters.com", "workable.com", "myworkdayjobs.com",
+    "bamboohr.com", "recruitee.com", "jobvite.com", "icims.com", "breezy.hr", "applytojob.com", "rippling.com",
+    "freshteam.com", "zohorecruit.com", "wellfound.com", "angel.co", "remoteok.com", "remotive.com", "ycombinator.com",
+)
+
+
+def split_company_links(url: str | None) -> tuple[str | None, str | None]:
+    """(website, linkedin_page) for a URL that was offered as a company website.
+
+    LinkedIn company pages are kept as the LinkedIn link; job-site and ATS hosts are dropped.
+    """
+    u = (url or "").strip()
+    if not u:
+        return None, None
+    if not re.match(r"(?i)https?://", u):
+        u = "https://" + u
+    host = (domain_of(u) or "").lower()
+    if not host:
+        return None, None
+    if "linkedin.com" in host and "/company/" in u.lower():
+        return None, u
+    if any(h in host for h in JOB_SITE_HOSTS):
+        return None, None
+    return u, None
+
+
+_MOJIBAKE_RE = re.compile(r"[ÃÂâ][\u0080-¿‘-„€™]")
+
+
+def fix_mojibake(s: str | None) -> str:
+    """Repair UTF-8 text that was decoded as Latin-1 / cp1252 ('â€“' -> '–'); other text is returned unchanged."""
+    if not s or not _MOJIBAKE_RE.search(s):
+        return s or ""
+    for enc in ("cp1252", "latin-1"):
+        try:
+            fixed = s.encode(enc).decode("utf-8")
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            continue
+        if not _MOJIBAKE_RE.search(fixed) or fixed.count("�") == 0:
+            return fixed
+    return s
+
+
+_NAME_PREFIX_RE = re.compile(r"(?i)^\s*(?:(?:careers?|jobs?|work|working|hiring|openings?|opportunities)\s+(?:at|with|@)\s+|join\s+(?:us\s+at\s+)?(?=\S))")
+_NAME_SUFFIX_RE = re.compile(
+    r"(?i)[\s:|–—-]*\b(careers?( site| page| portal)?|jobs?( board| portal| page)?|job board|career site|hiring|"
+    r"recruitment|recruiting|talent( community| network)?|external( careers?)?|internal( careers?)?|global careers)\s*$"
+)
+
+
+def clean_company_name(name: str | None) -> str:
+    """'Careers at Tide' -> 'Tide', 'Acme Jobs' -> 'Acme', 'ACME Careers Site' -> 'ACME'."""
+    s = fix_mojibake(name).strip()
+    if not s:
+        return ""
+    for _ in range(2):
+        s2 = _NAME_PREFIX_RE.sub("", s)
+        s2 = _NAME_SUFFIX_RE.sub("", s2).strip(" :|-–—")
+        if s2 == s or not s2:
+            break
+        s = s2
+    return s or (name or "").strip()
+
+
+# ----------------------------------------------------------------------------- website hints from text
+_URL_OR_MAIL_RE = re.compile(r"(?i)\b(?:https?://|www\.)[^\s<>\"'()\[\]]+|[\w.+-]+@([a-z0-9.-]+\.[a-z]{2,})")
+_NOT_A_COMPANY_SITE = (
+    "gmail.", "outlook.", "yahoo.", "hotmail.", "protonmail.", "icloud.", "google.", "youtube.", "twitter.", "x.com",
+    "facebook.", "instagram.", "wikipedia.", "w3.org", "schema.org", "github.com", "medium.com", "bit.ly", "goo.gl",
+    "apple.com", "microsoft.com", "amazon.", "amazonaws.", "cloudfront.", "glassdoor.", "crunchbase.",
+)
+
+
+def domain_hints(text: str | None, company_norm: str) -> list[str]:
+    """Root domains mentioned in a posting that look like the employer's own site, best first.
+
+    A domain whose label contains the company's name ('tide.co' for 'tide') beats one that is merely
+    mentioned twice; job sites, mail providers and big platforms never count.
+    """
+    if not text:
+        return []
+    tokens = [t for t in (company_norm or "").split() if len(t) >= 3]
+    counts: dict[str, int] = {}
+    for m in _URL_OR_MAIL_RE.finditer(text):
+        raw = m.group(1) or m.group(0)
+        d = root_domain(domain_of(raw if "://" in raw or raw.startswith("www.") or "@" not in raw else raw))
+        if not d or any(h in d for h in JOB_SITE_HOSTS) or any(h in d for h in _NOT_A_COMPANY_SITE):
+            continue
+        counts[d] = counts.get(d, 0) + 1
+    ranked = []
+    for d, n in counts.items():
+        label = d.split(".")[0]
+        named = any(t in label or label in t for t in tokens) if tokens else False
+        if named or n >= 2:
+            ranked.append((0 if named else 1, -n, len(d), d))
+    return [d for _, _, _, d in sorted(ranked)]

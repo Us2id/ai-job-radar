@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 from ..models import Job
+from ..sources.base import window_cutoff
 
 
 def _d(s: str) -> datetime:
@@ -11,7 +12,7 @@ def _d(s: str) -> datetime:
 
 
 def apply_window(job: Job, now: datetime, days: int) -> None:
-    cutoff = now - timedelta(days=days)
+    cutoff = window_cutoff(now, days)
     claims = sorted({c[:10] for c in job.posted_claims if c})
     first_seen = job.first_seen or now
     earliest_claim = _d(claims[0]) if claims else None

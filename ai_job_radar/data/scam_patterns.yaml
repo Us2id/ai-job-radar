@@ -1,7 +1,8 @@
-# Signals used to flag fake, scam and ghost postings. Weights are added to a base score of 50
+# Signals used to flag fake, scam and ghost postings. Weights are added to a base score of 58
 # and the result is clamped to 0..100. Patterns are case-insensitive regexes applied to the
-# description (and, where noted, the title or company name). Nothing here is country-specific
-# by design: Indian, US and European wording sits side by side.
+# description (and, where noted, the title or company name). A match inside an anti-fraud notice
+# ("we will never ask you to pay a fee") is ignored. Nothing here is country-specific by design:
+# Indian, US and European wording sits side by side.
 
 scam:
   - id: asks_for_money
@@ -176,6 +177,7 @@ positive:
   company_website_matches_apply_domain: 6
   linkedin_page: 3
   size_known: 3
+  anti_fraud_notice: 2
 
 levels:
   - [75, "Likely genuine"]

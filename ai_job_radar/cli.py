@@ -26,7 +26,7 @@ def _add_run_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--limit-boards", type=int, help="(testing) only the first N boards")
     p.add_argument("--max-terms", type=int, help="(testing) only the first N search terms")
     p.add_argument("--jobspy-sites", default="", help="override job sites, e.g. linkedin,indeed,naukri,glassdoor")
-    p.add_argument("--from-raw", help="skip fetching: re-run filtering, scoring and the workbook from a saved raw_runN.json.gz")
+    p.add_argument("--from-raw", help="skip fetching: re-run filtering, scoring and the workbook from a saved raw_*.json.gz dump (printed at the end of every run)")
     p.add_argument("--enrich-budget", type=int, default=900, help="seconds of web lookups for company checks before falling back to cached data (default 900)")
     p.add_argument("--boards-file", action="append", default=[], help="extra YAML of boards (name, url, website, countries)")
     p.add_argument("--no-openjobs", action="store_true", help="skip the bundled OpenJobs board dataset")
