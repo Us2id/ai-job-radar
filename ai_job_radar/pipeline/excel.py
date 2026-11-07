@@ -11,6 +11,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.worksheet import Worksheet
 
 from ..models import Job
+from .dedup import _city_key
 from ..text import snippet
 
 HEADER_FILL = PatternFill("solid", fgColor="1F3A5F")
@@ -37,7 +38,8 @@ def _location(j: Job) -> str:
     if j.country_name or j.country:
         parts.append(j.country_name or j.country)
     s = ", ".join(parts) or (j.location_raw or "")
-    others = [loc for loc in (j.extra.get("locations") or []) if loc and loc != j.location_raw]
+    shown = _city_key(j.city or j.location_raw or "")
+    others = [loc for loc in (j.extra.get("locations") or []) if loc and loc != j.location_raw and _city_key(loc) != shown]
     if others:
         s = f"{s} (+{len(others)} more: " + "; ".join(others[:6]) + (" …" if len(others) > 6 else "") + ")"
     return s
