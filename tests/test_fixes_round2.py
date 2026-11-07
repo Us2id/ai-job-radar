@@ -269,3 +269,17 @@ def test_repeat_run_skips_recent_nothing_found_markers(tmp_path):
     e.http.get = lambda *a, **k: calls.append(a) or (_ for _ in ()).throw(RuntimeError("no network in tests"))
     e._resolve_sizes([[j]])
     assert calls == [], "a marker from today means: do not look this company up again"
+
+
+def test_internshala_is_opt_in():
+    from ai_job_radar.pipeline.run import LANES
+    assert "internshala" not in LANES and "instahyre" in LANES and "hn" in LANES
+    from ai_job_radar import cli
+    import argparse
+    p = argparse.ArgumentParser()
+    # the run parser is built inside main(); check the flag exists by parsing --help text
+    import io, contextlib
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf), pytest.raises(SystemExit):
+        cli.main(["run", "--help"])
+    assert "--internships" in buf.getvalue()

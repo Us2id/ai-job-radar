@@ -4,8 +4,10 @@ Find **LLM / AI / ML job openings posted in the last N days**, in any country an
 flag **fake, scam and ghost postings**, and get everything in one **Excel workbook**.
 
 - Scans employer job boards directly (Greenhouse, Lever, Ashby, SmartRecruiters, Workable, Recruitee,
-  BambooHR, Workday) plus job sites (LinkedIn, Indeed, Glassdoor, Naukri and regional boards) and remote boards
-  (Remotive, RemoteOK). Optional keyed lanes: Google Jobs (SerpApi), Adzuna, Jooble.
+  BambooHR, Workday) plus job sites (LinkedIn, Indeed, Glassdoor, Naukri and regional boards), remote boards
+  (Remotive, RemoteOK), Instahyre (India, with the employer's own headcount and website) and the monthly
+  Hacker News "Who is hiring" thread. Internshala (India internships) with `--internships`. Optional keyed
+  lanes: Google Jobs (SerpApi), Adzuna, Jooble.
 - Remembers when each opening was first seen, so reposts of old jobs are not mistaken for new ones.
 - Scores every posting 0-100 for legitimacy with reasons: asks for money, WhatsApp-only contact,
   free-mail applications, unnamed company, brand-new domain, evergreen wording, long open, reposted,
@@ -30,11 +32,12 @@ ai-job-radar run --domain mechanical --days 14     # unknown words are matched l
 ai-job-radar run --deep --keywords "speech, robotics"
 ```
 
-Output: `output/ai-jobs_<country>_<domain>_<days>d_<date>.xlsx` with five sheets:
+Output: `output/ai-jobs_<country>_<domain>_<days>d_<date>.xlsx` with six sheets:
 
 | Sheet | Content |
 |---|---|
 | Jobs | Every opening that opened inside the window, sorted by legitimacy score then date |
+| New this run | Only the openings this database had never seen before: the sheet to read daily |
 | Flagged | Postings worth a second look: scam signals, ghost signals, reposts, unknown dates |
 | Companies | One row per employer: website, size (+source), careers board, domain age, LinkedIn page |
 | Run log | What was scanned, counts per source, errors, parameters |
@@ -43,7 +46,8 @@ Output: `output/ai-jobs_<country>_<domain>_<days>d_<date>.xlsx` with five sheets
 Columns on the Jobs sheet: Company, Company website, Company size, Job title, Apply link, Location,
 Work mode, Posted (claimed), First seen, Days open, Legitimacy score, Risk level, Flags / reasons,
 On company careers page?, Company careers / ATS, Sources, Platform / ATS, Requisition ID, Role family,
-Seniority, Experience, Employment type, Salary (as listed), AI relevance, Matched AI terms, Domain tags,
+Seniority, Experience, Employment type, Salary (as listed), Salary / year (parsed), Salary / year INR approx,
+AI relevance, Matched AI terms, Domain tags,
 Company industry, Company LinkedIn, Poster type, Size source, Domain registered, Verification notes,
 Last verified live, Times seen, Also listed at, Description (start), Review note, Job ID.
 
@@ -84,6 +88,9 @@ Last verified live, Times seen, Also listed at, Description (start), Review note
 The skill runs the tool, then (optionally) researches the doubtful companies on the web through
 `review-export` / `review-import`, which fills in websites, sizes and verdicts and rewrites the workbook.
 
+Run it every morning: `ai-job-radar schedule install --at 08:00 -- --days 1 --country India` installs a daily
+launchd job on macOS (and prints the crontab line on Linux); `schedule status` and `schedule uninstall` manage it.
+
 ## Options worth knowing
 
 ```
@@ -92,7 +99,8 @@ The skill runs the tool, then (optionally) researches the doubtful companies on 
 --domain WORDS           default tech (no filter); comma-separate several; any word works
 --keywords a,b           extra search terms for the job-site lanes
 --deep                   longer search-term list (more requests)
---sources ats,jobspy,remote,google,adzuna,jooble
+--sources ats,jobspy,remote,instahyre,hn,google,adzuna,jooble
+--internships            also scan Internshala (India internships)
 --all-boards             scan every known employer board, not only the ones hinting at the country
 --results-per-term N     per search term per job site (default 200)
 --min-relevance N        AI relevance threshold (default 50)

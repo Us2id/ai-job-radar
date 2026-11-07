@@ -17,6 +17,7 @@ summarise. The tool does the heavy lifting (crawling, de-duplication, scoring, E
 | `--domain` | tech (no filter) | "healthcare", "climate", "mechanical", "fintech, insurance"; any word works |
 | `--keywords` | none | extra search terms the user names, e.g. "speech", "robotics" |
 | `--deep` | off | "search thoroughly", "as many as possible" |
+| `--internships` | off | "internships", "intern roles" (adds Internshala, India) |
 
 Country accepts any name or ISO code. Domain accepts anything: known domains expand to synonyms,
 unknown words are matched literally. Several domains can be comma-separated.
@@ -68,7 +69,7 @@ invent facts: leave fields null when the web does not say.
 Tell the user, in plain language:
 
 - how many openings were found for the window, country and domain;
-- the path of the workbook and what each sheet holds (Jobs, Flagged, Companies, Run log, About);
+- the path of the workbook and what each sheet holds (Jobs, New this run, Flagged, Companies, Run log, About);
 - the risk-level breakdown and the two or three most interesting flags;
 - any source that failed (the Run log sheet lists errors), and that job-site lanes can be rate-limited.
 
@@ -79,4 +80,6 @@ Do not paste the whole table into the chat. Never state a posting is fake; say w
 - `ai-job-radar discover "Company|website" ...` finds a company's public ATS board and remembers it.
 - `ai-job-radar boards --country IN --count` shows how many boards are known for a country.
 - `ai-job-radar runs` lists previous runs.
+- `ai-job-radar schedule install --at 08:00 -- --days 1 --country India` runs it daily (launchd on macOS, a
+  crontab line on Linux); `schedule status`, `schedule uninstall`.
 - `ai-job-radar run --help` lists every option (sources, proxies, thresholds, limits).

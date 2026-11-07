@@ -81,7 +81,6 @@ COLUMNS = [
     ("Size source", 12, lambda j: j.company_size_source, "text"),
     ("Domain registered", 14, lambda j: j.domain_registered if j.domain_registered != "unknown" else None, "text"),
     ("Verification notes", 36, lambda j: j.verification_notes, "wrap"),
-    ("Scam-text model", 10, lambda j: j.extra.get("scam_text_prob"), "text"),
     ("Last verified live", 15, lambda j: _d(j.last_verified_live), "date"),
     ("Times seen", 9, lambda j: j.times_seen, "int"),
     ("Also listed at", 40, lambda j: "\n".join(u for u in j.urls if u != j.url)[:2000], "wrap"),
@@ -183,6 +182,8 @@ def write_workbook(path: str | Path, jobs: list[Job], flagged: list[Job], compan
 ABOUT = [
     ("What this is", "Recent LLM / AI / ML job openings gathered from employer job boards and job sites, de-duplicated, scored for legitimacy, and filtered to the country, domain and time window you asked for."),
     ("Jobs sheet", "Every opening that opened inside the window. Sorted by legitimacy score, then date. Use the filters in row 1."),
+    ("New this run sheet", "Only the openings this database had never seen before this run. Empty on a first run (everything is new) and the sheet to read on a daily schedule."),
+    ("Salary columns", "'Salary (as listed)' is the source text. 'Salary / year (parsed)' normalises it to a yearly range in the listed currency ('8-12 LPA' = INR 800,000-1,200,000; monthly figures are multiplied by 12). 'Salary / year INR approx' converts with fixed approximate exchange rates, for sorting only."),
     ("Flagged sheet", "Openings worth a second look: scam signals, ghost-job signals, reposts of older postings, and postings whose date could not be confirmed. They also appear on the Jobs sheet when they are inside the window."),
     ("Companies sheet", "One row per employer with what could be verified: website, size, careers board, domain age, LinkedIn page."),
     ("Posted (claimed) vs First seen", "'Posted' is what the source says. Job sites refresh that date on every repost. 'First seen' is when this tool first saw the opening; from the second run on it is the more honest date."),

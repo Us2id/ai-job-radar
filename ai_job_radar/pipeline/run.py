@@ -32,7 +32,7 @@ from .store import Store, default_home
 from .verify import poster_type, score_all
 from .window import apply_window
 
-LANES = ["ats", "jobspy", "remote", "instahyre", "internshala", "hn", "google", "adzuna", "jooble"]
+LANES = ["ats", "jobspy", "remote", "instahyre", "hn", "google", "adzuna", "jooble"]  # internshala is opt-in (--internships)
 
 
 @dataclass

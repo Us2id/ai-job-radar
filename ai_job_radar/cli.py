@@ -14,7 +14,8 @@ def _add_run_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--country", default=os.environ.get("AI_JOB_RADAR_COUNTRY", "India"), help="country name or ISO code; 'any' for no country filter (default India)")
     p.add_argument("--keywords", default="", help="extra search terms, comma-separated")
     p.add_argument("--deep", action="store_true", help="use the longer search-term list (more requests)")
-    p.add_argument("--sources", default=",".join(["ats", "jobspy", "remote", "instahyre", "internshala", "hn", "google", "adzuna", "jooble"]), help="lanes to run: ats,jobspy,remote,instahyre,internshala,hn,google,adzuna,jooble")
+    p.add_argument("--sources", default=",".join(["ats", "jobspy", "remote", "instahyre", "hn", "google", "adzuna", "jooble"]), help="lanes to run: ats,jobspy,remote,instahyre,hn,google,adzuna,jooble (internshala is added by --internships)")
+    p.add_argument("--internships", action="store_true", help="also scan Internshala (India internships; many tiny employers, so read the flags)")
     p.add_argument("--out", help="output .xlsx path")
     p.add_argument("--db", help="SQLite path (default ~/.ai-job-radar/radar.sqlite)")
     p.add_argument("--results-per-term", type=int, default=200, help="results per search term per job site (default 200)")
@@ -42,7 +43,7 @@ def cmd_run(a: argparse.Namespace) -> int:
 
     cfg = RunConfig(
         days=a.days, domain=a.domain, country=a.country, keywords=[k.strip() for k in a.keywords.split(",") if k.strip()],
-        deep=a.deep, lanes=[s.strip() for s in a.sources.split(",") if s.strip()], out=a.out, db=a.db,
+        deep=a.deep, lanes=[s.strip() for s in a.sources.split(",") if s.strip()] + (["internshala"] if a.internships and "internshala" not in a.sources else []), out=a.out, db=a.db,
         results_per_term=a.results_per_term, min_relevance=a.min_relevance, all_boards=a.all_boards,
         board_workers=a.board_workers, delay=a.delay, proxies=[p.strip() for p in a.proxies.split(",") if p.strip()] or None,
         limit_boards=a.limit_boards, boards_files=a.boards_file, no_openjobs=a.no_openjobs, no_web_lookups=a.no_web_lookups,

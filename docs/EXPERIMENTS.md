@@ -1,7 +1,8 @@
-# Experiments branch: candidate additions and what the tests showed
+# Additions that were tested before being merged
 
-Each item below was built on this branch and run against live sources on 2026-11-07. Numbers are
-from those runs; they will drift. "Adopt" is a recommendation, not a decision.
+Each item below was built on an experiments branch and run against live sources on 2026-11-07, then the
+adopted ones were merged into `main`. Numbers are from those runs; they will drift. Items marked
+"optional" or "do not add" stay on the `experiments` branch (the scam-text classifier lives there).
 
 | # | Addition | What it adds | Test result | Cost / risk | Recommendation |
 |---|---|---|---|---|---|
