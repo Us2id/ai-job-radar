@@ -53,9 +53,9 @@ def _years_since(date_s: str | None, now: datetime) -> float | None:
 _NEGATION_RE = re.compile(
     r"(?i)\b(never|not|no|none|neither|nor|won'?t|wouldn'?t|don'?t|doesn'?t|didn'?t|cannot|can'?t|without|free of|"
     r"beware|fraud\w*|scam\w*|legitimate|caution|alert|red flag|warning|bogus|fake|impersonat\w*|phishing|suspicious|"
-    r"is free|are free|no cost|at no|any kind of fee|any fee)\b"
+    r"is free|are free|no cost|at no|any kind of fee|any fee|rather than|instead of|other than|including)\b"
 )
-_SENTENCE_SPLIT_RE = re.compile(r"[.!?\n]")
+_SENTENCE_SPLIT_RE = re.compile(r"[.!?](?=\s|$)|\n")  # a dot inside gmail.com or www.x.com does not end a sentence
 
 
 def _negated(text: str, start: int) -> bool:
@@ -139,8 +139,13 @@ def score_all(jobs: list[Job], now: datetime) -> None:
         for s, rxs in k["scam"]:
             hits, negated = _scam_hits(rxs, text)
             anti_fraud_notice = anti_fraud_notice or negated
-            if s["id"] == "free_email_apply" and any(FREE_MAIL.search(e) for e in j.emails):
-                hits.append("emails field")
+            if s["id"] == "free_email_apply" and not hits:
+                # Addresses pulled out of the text: only when the text around them is not an anti-fraud notice.
+                for e in j.emails:
+                    at = text.lower().find(e.lower())
+                    if FREE_MAIL.search(e) and (at < 0 or not _negated(text, at)):
+                        hits.append("emails field")
+                        break
             if hits:
                 score += int(s["weight"])
                 flags.append(s["reason"])

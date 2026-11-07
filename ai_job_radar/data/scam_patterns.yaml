@@ -15,7 +15,7 @@ scam:
       - 'security deposit'
       - 'refundable (fee|deposit|amount|charge)\b'
       - '(laptop|equipment|kit|uniform|id card) (deposit|fee|charge|cost)\b'
-      - 'investment (required|of|needed)'
+      - 'investment (required|needed)\b|(initial|upfront|minimum|small) investment\b'
       - 'one[- ]time (fee|payment|charge)\b'
       - 'nominal (fee|charge|amount)\b'
       - 'pay (a|the)? ?(small|nominal|one[- ]time|registration)? ?(fee|amount|charge)\b'
@@ -48,7 +48,7 @@ scam:
       - 'no interview'
       - 'no (experience|skills?|qualification) (required|needed|necessary)'
       - '(weekly|daily) (payout|payment|income|earning)'
-      - 'part[- ]time (job|work|income).{0,60}(home|mobile|phone|anywhere)'
+      - 'part[- ]time (job|work|income).{0,60}(home|mobile|phone|anywhere).{0,60}(earn|income|per day|daily|weekly|rs\.?|₹|\$)'
       - 'work from (home|mobile|phone).{0,60}(earn|income|per day|daily)'
       - 'copy[- ]?paste (job|work|task)'
       - 'form[- ]filling'
@@ -80,7 +80,7 @@ scam:
     patterns:
       - '(\d{2}) ?(lakh|lac|lpa).{0,30}(fresher|no experience|0 ?(-|to) ?1 ?years?)'
       - '(\$|usd) ?\d{3},?\d{3}.{0,30}(no experience|entry[- ]level|fresher)'
-      - 'unlimited (income|earning)'
+      - 'unlimited (income|earning)s?\b(?! potential)'
 
 # Signals that a posting may be a ghost job (open with no intent to hire soon).
 ghost:

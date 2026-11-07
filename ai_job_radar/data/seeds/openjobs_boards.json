@@ -154,16 +154,6 @@
 ]
 },
 {
-"name": "Worlds",
-"platform": "ashby",
-"slug": "Worlds",
-"url": "https://jobs.ashbyhq.com/Worlds",
-"website": "http://www.worlds.org",
-"countries": [
-"US"
-]
-},
-{
 "name": "Abridge",
 "platform": "ashby",
 "slug": "abridge",
@@ -351,16 +341,6 @@
 ]
 },
 {
-"name": "Aviator",
-"platform": "ashby",
-"slug": "aviator",
-"url": "https://jobs.ashbyhq.com/aviator",
-"website": "https://outscal.com/company/aviator",
-"countries": [
-"US"
-]
-},
-{
 "name": "bad robot games",
 "platform": "ashby",
 "slug": "badrobotgames",
@@ -491,16 +471,6 @@
 "countries": []
 },
 {
-"name": "Captions",
-"platform": "ashby",
-"slug": "captions",
-"url": "https://jobs.ashbyhq.com/captions/",
-"website": "https://jobs.ashbyhq.com",
-"countries": [
-"US"
-]
-},
-{
 "name": "Casium",
 "platform": "ashby",
 "slug": "casium",
@@ -606,16 +576,6 @@
 "DE",
 "IL",
 "NL",
-"US"
-]
-},
-{
-"name": "Datacurve",
-"platform": "ashby",
-"slug": "datacurve",
-"url": "https://jobs.ashbyhq.com/datacurve",
-"website": "https://datacurve.ai/",
-"countries": [
 "US"
 ]
 },
@@ -1327,16 +1287,6 @@
 ]
 },
 {
-"name": "Moonshot AI",
-"platform": "ashby",
-"slug": "moonshot-ai",
-"url": "https://jobs.ashbyhq.com/moonshot-ai",
-"website": "https://moonshot-ai.com/",
-"countries": [
-"US"
-]
-},
-{
 "name": "multiverse",
 "platform": "ashby",
 "slug": "multiverse",
@@ -1516,16 +1466,6 @@
 "url": "https://jobs.ashbyhq.com/profound",
 "website": "https://profound.com",
 "countries": []
-},
-{
-"name": "Proof of Play",
-"platform": "ashby",
-"slug": "proofofplay",
-"url": "https://jobs.ashbyhq.com/proofofplay",
-"website": "https://www.proofofplay.com",
-"countries": [
-"US"
-]
 },
 {
 "name": "Propel",
@@ -1928,18 +1868,6 @@
 ]
 },
 {
-"name": "Sully.ai",
-"platform": "ashby",
-"slug": "sully-ai",
-"url": "https://jobs.ashbyhq.com/sully-ai",
-"website": "https://sully.ai",
-"countries": [
-"SA",
-"AE",
-"US"
-]
-},
-{
 "name": "Supabase",
 "platform": "ashby",
 "slug": "supabase",
@@ -2083,16 +2011,6 @@
 "countries": []
 },
 {
-"name": "Trove",
-"platform": "ashby",
-"slug": "trove",
-"url": "https://jobs.ashbyhq.com/trove",
-"website": "https://trove.pe/",
-"countries": [
-"US"
-]
-},
-{
 "name": "Trust Wallet",
 "platform": "ashby",
 "slug": "trust-wallet",
@@ -2126,16 +2044,6 @@
 "url": "https://jobs.ashbyhq.com/vanta",
 "website": "https://www.vanta.com",
 "countries": []
-},
-{
-"name": "Verge Genomics",
-"platform": "ashby",
-"slug": "verge-genomics",
-"url": "https://jobs.ashbyhq.com/verge-genomics",
-"website": "https://www.vergegenomics.com",
-"countries": [
-"US"
-]
 },
 {
 "name": "Welltech",
@@ -2472,19 +2380,6 @@
 ]
 },
 {
-"name": "Bragg",
-"platform": "bamboohr",
-"slug": "bragggaming",
-"url": "https://bragggaming.bamboohr.com/careers",
-"website": "https://www.bragg.group",
-"countries": [
-"MT",
-"SI",
-"GB",
-"US"
-]
-},
-{
 "name": "brightline studios",
 "platform": "bamboohr",
 "slug": "brightline",
@@ -2712,17 +2607,6 @@
 ]
 },
 {
-"name": "Felix & Paul Studios",
-"platform": "bamboohr",
-"slug": "felixandpaul",
-"url": "https://felixandpaul.bamboohr.com/careers",
-"website": "http://www.felixandpaul.com",
-"countries": [
-"CA",
-"US"
-]
-},
-{
 "name": "Final Strike Games",
 "platform": "bamboohr",
 "slug": "finalstrikegames",
@@ -2808,16 +2692,6 @@
 ]
 },
 {
-"name": "Fusebox Games",
-"platform": "bamboohr",
-"slug": "fuseboxgames",
-"url": "https://fuseboxgames.bamboohr.com/careers",
-"website": "http://www.fuseboxgames.com",
-"countries": [
-"US"
-]
-},
-{
 "name": "fuse games",
 "platform": "bamboohr",
 "slug": "fusegames",
@@ -2865,16 +2739,6 @@
 "url": "https://gasketgames.bamboohr.com/careers",
 "website": "https://gasketgames.bamboohr.com",
 "countries": []
-},
-{
-"name": "Gearbox Entertainment",
-"platform": "bamboohr",
-"slug": "gearboxsoftware",
-"url": "https://gearboxsoftware.bamboohr.com/careers",
-"website": "https://outscal.com/company/gearbox-entertainment",
-"countries": [
-"US"
-]
 },
 {
 "name": "GIRRAPHIC",
@@ -3187,17 +3051,6 @@
 ]
 },
 {
-"name": "Meta",
-"platform": "bamboohr",
-"slug": "meta",
-"url": "https://meta.bamboohr.com/jobs/",
-"website": "https://www.metacareers.com/",
-"countries": [
-"FR",
-"US"
-]
-},
-{
 "name": "Multiplier",
 "platform": "bamboohr",
 "slug": "multiplier",
@@ -3388,16 +3241,6 @@
 "GB",
 "US",
 "UZ"
-]
-},
-{
-"name": "Quantinium",
-"platform": "bamboohr",
-"slug": "quantinium",
-"url": "https://quantinium.bamboohr.com/careers",
-"website": "quantinium.cc",
-"countries": [
-"US"
 ]
 },
 {
@@ -3979,18 +3822,6 @@
 ]
 },
 {
-"name": "Thumbtack",
-"platform": "greenhouse",
-"slug": "Thumbtack",
-"url": "https://boards.greenhouse.io/Thumbtack",
-"website": "https://boards.greenhouse.io",
-"countries": [
-"CA",
-"PH",
-"US"
-]
-},
-{
 "name": "Abnormal Security",
 "platform": "greenhouse",
 "slug": "abnormalsecurity",
@@ -4065,16 +3896,6 @@
 ]
 },
 {
-"name": "Airbyte",
-"platform": "greenhouse",
-"slug": "airbyte",
-"url": "https://boards.greenhouse.io/airbyte",
-"website": "https://boards.greenhouse.io",
-"countries": [
-"US"
-]
-},
-{
 "name": "Airtable",
 "platform": "greenhouse",
 "slug": "airtable",
@@ -4120,16 +3941,6 @@
 "slug": "altentechnologyusa",
 "url": "https://boards.greenhouse.io/altentechnologyusa",
 "website": "https://www.atlenusa.com",
-"countries": [
-"US"
-]
-},
-{
-"name": "Amplitude",
-"platform": "greenhouse",
-"slug": "amplitude",
-"url": "https://boards.greenhouse.io/amplitude",
-"website": "https://amplitude.com",
 "countries": [
 "US"
 ]
@@ -4231,26 +4042,6 @@
 "url": "https://boards.greenhouse.io/appsflyer",
 "website": "https://www.appsflyer.com",
 "countries": []
-},
-{
-"name": "Archetype Entertainment",
-"platform": "greenhouse",
-"slug": "archetypeentertainment",
-"url": "https://boards.greenhouse.io/archetypeentertainment",
-"website": "https://outscal.com/company/archetype-entertainment",
-"countries": [
-"US"
-]
-},
-{
-"name": "ARENANET",
-"platform": "greenhouse",
-"slug": "arenanet",
-"url": "https://boards.greenhouse.io/arenanet",
-"website": "http://www.arena.net",
-"countries": [
-"US"
-]
 },
 {
 "name": "Arkose Labs",
@@ -4525,16 +4316,6 @@
 "website": "https://boards.greenhouse.io",
 "countries": [
 "IN",
-"US"
-]
-},
-{
-"name": "Blitz app",
-"platform": "greenhouse",
-"slug": "blitzapp",
-"url": "https://boards.greenhouse.io/blitzapp",
-"website": "https://blitz.gg",
-"countries": [
 "US"
 ]
 },
@@ -4814,18 +4595,6 @@
 "url": "https://boards.greenhouse.io/clutch",
 "website": "https://clutch.co",
 "countries": [
-"US"
-]
-},
-{
-"name": "Co Active Systems",
-"platform": "greenhouse",
-"slug": "coactivesystems",
-"url": "https://boards.greenhouse.io/coactivesystems",
-"website": "https://boards.greenhouse.io",
-"countries": [
-"CA",
-"CO",
 "US"
 ]
 },
@@ -5247,16 +5016,6 @@
 ]
 },
 {
-"name": "dYdX",
-"platform": "greenhouse",
-"slug": "dydx",
-"url": "https://boards.greenhouse.io/dydx",
-"website": "https://boards.greenhouse.io",
-"countries": [
-"US"
-]
-},
-{
 "name": "Dynamis Inc",
 "platform": "greenhouse",
 "slug": "dynamisinc",
@@ -5308,27 +5067,6 @@
 "url": "https://job-boards.greenhouse.io/eclinicalsolutions",
 "website": "https://www.eclinicalsol.com/",
 "countries": []
-},
-{
-"name": "EDGLRD",
-"platform": "greenhouse",
-"slug": "edglrd",
-"url": "https://job-boards.greenhouse.io/edglrd",
-"website": "https://www.edglrd.com/",
-"countries": [
-"US"
-]
-},
-{
-"name": "Embrace",
-"platform": "greenhouse",
-"slug": "embrace",
-"url": "https://boards.greenhouse.io/embrace",
-"website": "https://embrace.io",
-"countries": [
-"GB",
-"US"
-]
 },
 {
 "name": "Encore",
@@ -5574,16 +5312,6 @@
 ]
 },
 {
-"name": "Fireworks AI",
-"platform": "greenhouse",
-"slug": "fireworksai",
-"url": "https://boards.greenhouse.io/fireworksai",
-"website": "https://fireworks.ai",
-"countries": [
-"US"
-]
-},
-{
 "name": "fivetran",
 "platform": "greenhouse",
 "slug": "fivetran",
@@ -5622,41 +5350,6 @@
 "countries": []
 },
 {
-"name": "Fortra",
-"platform": "greenhouse",
-"slug": "fortra",
-"url": "https://boards.greenhouse.io/fortra",
-"website": "https://boards.greenhouse.io",
-"countries": [
-"AR",
-"AM",
-"AU",
-"CA",
-"CO",
-"MY",
-"NL",
-"SA",
-"ES",
-"SE",
-"AE",
-"GB",
-"US"
-]
-},
-{
-"name": "FORTUNE",
-"platform": "greenhouse",
-"slug": "fortune",
-"url": "https://boards.greenhouse.io/fortune",
-"website": "https://boards.greenhouse.io",
-"countries": [
-"CL",
-"HK",
-"GB",
-"US"
-]
-},
-{
 "name": "Four Hands",
 "platform": "greenhouse",
 "slug": "fourhands",
@@ -5690,16 +5383,6 @@
 "url": "https://boards.greenhouse.io/genea",
 "website": "https://www.getgenea.com/",
 "countries": []
-},
-{
-"name": "Genies",
-"platform": "greenhouse",
-"slug": "genies",
-"url": "https://job-boards.greenhouse.io/genies",
-"website": "http://genies.com",
-"countries": [
-"US"
-]
 },
 {
 "name": "gitlab",
@@ -5783,17 +5466,6 @@
 "SG",
 "ES",
 "GB",
-"US"
-]
-},
-{
-"name": "Gloss Genius",
-"platform": "greenhouse",
-"slug": "glossgenius",
-"url": "https://boards.greenhouse.io/glossgenius?t=ba74544c3us",
-"website": "https://glossgenius.com/",
-"countries": [
-"CA",
 "US"
 ]
 },
@@ -5889,16 +5561,6 @@
 "slug": "goop",
 "url": "https://boards.greenhouse.io/goop",
 "website": "https://goop.com",
-"countries": [
-"US"
-]
-},
-{
-"name": "Govini",
-"platform": "greenhouse",
-"slug": "govini",
-"url": "https://boards.greenhouse.io/govini",
-"website": "https://www.govini.com/",
 "countries": [
 "US"
 ]
@@ -6226,16 +5888,6 @@
 "countries": []
 },
 {
-"name": "Hypixel Studios",
-"platform": "greenhouse",
-"slug": "hypixelstudios",
-"url": "https://job-boards.greenhouse.io/hypixelstudios",
-"website": "https://hypixelstudios.com/",
-"countries": [
-"US"
-]
-},
-{
 "name": "Imply",
 "platform": "greenhouse",
 "slug": "imply",
@@ -6289,20 +5941,6 @@
 ]
 },
 {
-"name": "Inspiren",
-"platform": "greenhouse",
-"slug": "inspiren",
-"url": "https://boards.greenhouse.io/inspiren",
-"website": "https://www.inspiren.com",
-"countries": [
-"BR",
-"ID",
-"PL",
-"TW",
-"US"
-]
-},
-{
 "name": "Instacart",
 "platform": "greenhouse",
 "slug": "instacart",
@@ -6332,21 +5970,6 @@
 "BE",
 "NL",
 "RO"
-]
-},
-{
-"name": "Inworld AI",
-"platform": "greenhouse",
-"slug": "inworldai",
-"url": "https://boards.greenhouse.io/inworldai",
-"website": "https://inworld.ai",
-"countries": [
-"CA",
-"DE",
-"RS",
-"CH",
-"GB",
-"US"
 ]
 },
 {
@@ -6649,16 +6272,6 @@
 "countries": [
 "SE",
 "GB",
-"US"
-]
-},
-{
-"name": "magic leap",
-"platform": "greenhouse",
-"slug": "magicleapinc",
-"url": "https://boards.greenhouse.io/magicleapinc",
-"website": "https://www.magicleap.com",
-"countries": [
 "US"
 ]
 },
@@ -7084,20 +6697,6 @@
 "countries": []
 },
 {
-"name": "Niantic",
-"platform": "greenhouse",
-"slug": "niantic",
-"url": "https://job-boards.greenhouse.io/niantic",
-"website": "https://nianticlabs.com/",
-"countries": [
-"JP",
-"MX",
-"ES",
-"CH",
-"US"
-]
-},
-{
 "name": "Nice",
 "platform": "greenhouse",
 "slug": "nice",
@@ -7334,17 +6933,6 @@
 ]
 },
 {
-"name": "Outschool",
-"platform": "greenhouse",
-"slug": "outschool",
-"url": "https://boards.greenhouse.io/outschool",
-"website": "https://www.outschool.com",
-"countries": [
-"KR",
-"US"
-]
-},
-{
 "name": "Overdare",
 "platform": "greenhouse",
 "slug": "overdare",
@@ -7409,39 +6997,6 @@
 "url": "https://boards.greenhouse.io/performio",
 "website": "https://www.performio.co",
 "countries": []
-},
-{
-"name": "Perplexity",
-"platform": "greenhouse",
-"slug": "perplexityai",
-"url": "https://boards.greenhouse.io/perplexityai",
-"website": "https://www.perplexity.ai/",
-"countries": [
-"JP",
-"RS",
-"GB",
-"US"
-]
-},
-{
-"name": "Philo",
-"platform": "greenhouse",
-"slug": "philo",
-"url": "https://boards.greenhouse.io/philo",
-"website": "https://boards.greenhouse.io",
-"countries": [
-"US"
-]
-},
-{
-"name": "Pika",
-"platform": "greenhouse",
-"slug": "pika",
-"url": "https://job-boards.greenhouse.io/pika",
-"website": "https://pika.art",
-"countries": [
-"US"
-]
 },
 {
 "name": "Ping Identity",
@@ -7553,16 +7108,6 @@
 "url": "https://boards.greenhouse.io/profound",
 "website": "https://profound.com",
 "countries": []
-},
-{
-"name": "Propel",
-"platform": "greenhouse",
-"slug": "propel",
-"url": "https://boards.greenhouse.io/propel",
-"website": "https://www.propelholdings.com",
-"countries": [
-"US"
-]
 },
 {
 "name": "Prophecy",
@@ -7940,16 +7485,6 @@
 ]
 },
 {
-"name": "Saturn",
-"platform": "greenhouse",
-"slug": "saturn",
-"url": "https://boards.greenhouse.io/saturn",
-"website": "https://boards.greenhouse.io",
-"countries": [
-"US"
-]
-},
-{
 "name": "Scale AI",
 "platform": "greenhouse",
 "slug": "scaleai",
@@ -7971,16 +7506,6 @@
 "slug": "scoutmotors",
 "url": "https://job-boards.greenhouse.io/scoutmotors",
 "website": "https://job-boards.greenhouse.io",
-"countries": [
-"US"
-]
-},
-{
-"name": "Seam",
-"platform": "greenhouse",
-"slug": "seam",
-"url": "https://boards.greenhouse.io/seam",
-"website": "https://outscal.com/company/seam-(yc-s20)",
 "countries": [
 "US"
 ]
@@ -8160,20 +7685,6 @@
 "countries": [
 "MX",
 "AE",
-"US"
-]
-},
-{
-"name": "Snyk",
-"platform": "greenhouse",
-"slug": "snyk",
-"url": "https://boards.greenhouse.io/snyk?gh_src=3f9b65652us",
-"website": "https://boards.greenhouse.io",
-"countries": [
-"CA",
-"PT",
-"SG",
-"GB",
 "US"
 ]
 },
@@ -8662,16 +8173,6 @@
 "countries": []
 },
 {
-"name": "Three space lab",
-"platform": "greenhouse",
-"slug": "threespacelab",
-"url": "https://job-boards.greenhouse.io/threespacelab",
-"website": "https://www.3spacelab.com/",
-"countries": [
-"US"
-]
-},
-{
 "name": "Tide",
 "platform": "greenhouse",
 "slug": "tide",
@@ -8746,26 +8247,6 @@
 "ES",
 "UA",
 "GB",
-"US"
-]
-},
-{
-"name": "Tripwire",
-"platform": "greenhouse",
-"slug": "tripwireinteractive",
-"url": "https://job-boards.greenhouse.io/tripwireinteractive",
-"website": "https://www.tripwireinteractive.com/#/",
-"countries": [
-"US"
-]
-},
-{
-"name": "Trove",
-"platform": "greenhouse",
-"slug": "trove",
-"url": "https://boards.greenhouse.io/trove",
-"website": "https://trove.pe/",
-"countries": [
 "US"
 ]
 },
@@ -8869,33 +8350,12 @@
 ]
 },
 {
-"name": "Undead Labs",
-"platform": "greenhouse",
-"slug": "undeadlabsllc",
-"url": "https://boards.greenhouse.io/undeadlabsllc",
-"website": "http://undeadlabs.com",
-"countries": [
-"US"
-]
-},
-{
 "name": "Unispace",
 "platform": "greenhouse",
 "slug": "unispace",
 "url": "https://boards.greenhouse.io/unispace",
 "website": "https://unispace.online",
 "countries": []
-},
-{
-"name": "Uniswap Labs",
-"platform": "greenhouse",
-"slug": "uniswaplabs",
-"url": "https://boards.greenhouse.io/uniswaplabs?t=ddfafd235us",
-"website": "https://boards.greenhouse.io",
-"countries": [
-"JP",
-"US"
-]
 },
 {
 "name": "Unknown Worlds",
@@ -9028,16 +8488,6 @@
 ]
 },
 {
-"name": "Volley",
-"platform": "greenhouse",
-"slug": "volleythat",
-"url": "https://job-boards.greenhouse.io/volleythat",
-"website": "http://volleythat.com",
-"countries": [
-"US"
-]
-},
-{
 "name": "Wargaming",
 "platform": "greenhouse",
 "slug": "wargamingwelcometothejungle",
@@ -9056,16 +8506,6 @@
 "KR",
 "UA",
 "GB",
-"US"
-]
-},
-{
-"name": "Well",
-"platform": "greenhouse",
-"slug": "well",
-"url": "https://boards.greenhouse.io/well",
-"website": "https://boards.greenhouse.io",
-"countries": [
 "US"
 ]
 },
@@ -9106,35 +8546,6 @@
 "website": "https://www.wildlifestudios.com/",
 "countries": [
 "BR"
-]
-},
-{
-"name": "WireWheel",
-"platform": "greenhouse",
-"slug": "wirewheel",
-"url": "https://boards.greenhouse.io/wirewheel",
-"website": "https://boards.greenhouse.io",
-"countries": [
-"US"
-]
-},
-{
-"name": "Wizards of the Coast",
-"platform": "greenhouse",
-"slug": "wizardsofthecoast",
-"url": "https://boards.greenhouse.io/wizardsofthecoast",
-"website": "https://company.wizards.com/",
-"countries": [
-"AU",
-"CA",
-"CN",
-"HK",
-"JP",
-"PL",
-"SG",
-"ES",
-"GB",
-"US"
 ]
 },
 {
@@ -9199,18 +8610,6 @@
 "ES",
 "SE",
 "GB",
-"US"
-]
-},
-{
-"name": "Work & Co",
-"platform": "greenhouse",
-"slug": "workco",
-"url": "https://job-boards.greenhouse.io/workco",
-"website": "https://job-boards.greenhouse.io",
-"countries": [
-"BR",
-"PT",
 "US"
 ]
 },
@@ -9433,19 +8832,6 @@
 ]
 },
 {
-"name": "Lunchbox Entertainment",
-"platform": "lever",
-"slug": "LunchboxEntertainment",
-"url": "https://jobs.lever.co/LunchboxEntertainment",
-"website": "https://www.lunchboxentertainment.com/",
-"countries": [
-"ID",
-"IE",
-"GB",
-"US"
-]
-},
-{
 "name": "Onehouse",
 "platform": "lever",
 "slug": "Onehouse",
@@ -9468,16 +8854,6 @@
 ]
 },
 {
-"name": "Regent craft",
-"platform": "lever",
-"slug": "Regentcraft",
-"url": "https://jobs.lever.co/Regentcraft/",
-"website": "https://jobs.lever.co",
-"countries": [
-"US"
-]
-},
-{
 "name": "Stoic Studios",
 "platform": "lever",
 "slug": "Stoic",
@@ -9492,16 +8868,6 @@
 "url": "https://jobs.lever.co/Storygrounds",
 "website": "https://jobs.lever.co",
 "countries": []
-},
-{
-"name": "A-Team",
-"platform": "lever",
-"slug": "a",
-"url": "https://jobs.lever.co/a",
-"website": "https://www.a.team/",
-"countries": [
-"US"
-]
 },
 {
 "name": "AccelData",
@@ -9617,17 +8983,6 @@
 ]
 },
 {
-"name": "Age of Learning",
-"platform": "lever",
-"slug": "aofl",
-"url": "https://jobs.lever.co/aofl",
-"website": "http://www.ageoflearning.com",
-"countries": [
-"MX",
-"US"
-]
-},
-{
 "name": "Applike",
 "platform": "lever",
 "slug": "applike",
@@ -9684,18 +9039,6 @@
 "countries": []
 },
 {
-"name": "attentive",
-"platform": "lever",
-"slug": "attentive",
-"url": "https://jobs.lever.co/attentive",
-"website": "https://jobs.lever.co",
-"countries": [
-"AU",
-"GB",
-"US"
-]
-},
-{
 "name": "Avalanche Studios Group",
 "platform": "lever",
 "slug": "avalanchestudios",
@@ -9722,22 +9065,6 @@
 "website": "https://www.balbix.com",
 "countries": [
 "IN",
-"US"
-]
-},
-{
-"name": "barbaricum",
-"platform": "lever",
-"slug": "barbaricum",
-"url": "https://jobs.lever.co/barbaricum",
-"website": "https://barbaricum.com/",
-"countries": [
-"CO",
-"DJ",
-"DE",
-"JP",
-"JO",
-"QA",
 "US"
 ]
 },
@@ -9884,16 +9211,6 @@
 "countries": []
 },
 {
-"name": "Bonfire Studios",
-"platform": "lever",
-"slug": "bonfirestudios",
-"url": "https://jobs.lever.co/bonfirestudios/",
-"website": "http://www.bonfirestudios.com",
-"countries": [
-"US"
-]
-},
-{
 "name": "bounteous",
 "platform": "lever",
 "slug": "bounteous",
@@ -9976,27 +9293,6 @@
 "url": "https://jobs.lever.co/clari",
 "website": "https://www.clari.com",
 "countries": []
-},
-{
-"name": "Cognite",
-"platform": "lever",
-"slug": "cognite",
-"url": "https://jobs.lever.co/cognite",
-"website": "https://jobs.lever.co",
-"countries": [
-"AR",
-"CO",
-"FR",
-"DE",
-"IN",
-"JP",
-"MY",
-"NL",
-"NO",
-"AE",
-"GB",
-"US"
-]
 },
 {
 "name": "Everclear Foundation",
@@ -10366,16 +9662,6 @@
 ]
 },
 {
-"name": "Fanatics",
-"platform": "lever",
-"slug": "fanatics",
-"url": "https://jobs.lever.co/fanatics",
-"website": "http://www.fanaticsinc.com",
-"countries": [
-"US"
-]
-},
-{
 "name": "Fantasy",
 "platform": "lever",
 "slug": "fantasy",
@@ -10453,16 +9739,6 @@
 ]
 },
 {
-"name": "Gametime",
-"platform": "lever",
-"slug": "gametime",
-"url": "https://jobs.lever.co/gametime",
-"website": "https://gametime.co/",
-"countries": [
-"US"
-]
-},
-{
 "name": "golfscopeinc",
 "platform": "lever",
 "slug": "golfscopeinc",
@@ -10492,17 +9768,6 @@
 "AU",
 "CA",
 "IN",
-"GB",
-"US"
-]
-},
-{
-"name": "Hologram Labs",
-"platform": "lever",
-"slug": "hologram",
-"url": "https://jobs.lever.co/hologram",
-"website": "https://hologram.xyz",
-"countries": [
 "GB",
 "US"
 ]
@@ -10639,16 +9904,6 @@
 ]
 },
 {
-"name": "Jelly Smack",
-"platform": "lever",
-"slug": "jellysmack",
-"url": "https://jobs.lever.co/jellysmack",
-"website": "https://jobs.lever.co",
-"countries": [
-"US"
-]
-},
-{
 "name": "JMA",
 "platform": "lever",
 "slug": "jmawireless",
@@ -10730,16 +9985,6 @@
 ]
 },
 {
-"name": "Kyruus Health",
-"platform": "lever",
-"slug": "kyruushealth",
-"url": "https://jobs.lever.co/kyruushealth/",
-"website": "https://kyruushealth.com",
-"countries": [
-"US"
-]
-},
-{
 "name": "Larian Studios",
 "platform": "lever",
 "slug": "larian",
@@ -10791,16 +10036,6 @@
 "PH",
 "SG",
 "KR",
-"US"
-]
-},
-{
-"name": "Loaded",
-"platform": "lever",
-"slug": "loaded",
-"url": "https://jobs.lever.co/loaded",
-"website": "https://www.loaded.gg",
-"countries": [
 "US"
 ]
 },
@@ -10887,16 +10122,6 @@
 "SG",
 "KR",
 "TH",
-"US"
-]
-},
-{
-"name": "Media ocean",
-"platform": "lever",
-"slug": "mediaocean",
-"url": "https://jobs.lever.co/mediaocean",
-"website": "https://jobs.lever.co",
-"countries": [
 "US"
 ]
 },
@@ -10994,16 +10219,6 @@
 ]
 },
 {
-"name": "Nova Credit",
-"platform": "lever",
-"slug": "neednova",
-"url": "jobs.lever.co/neednova",
-"website": "https://www.novacredit.com/",
-"countries": [
-"US"
-]
-},
-{
 "name": "Netomi",
 "platform": "lever",
 "slug": "netomi",
@@ -11075,26 +10290,6 @@
 ]
 },
 {
-"name": "Octopus",
-"platform": "lever",
-"slug": "octopus",
-"url": "https://jobs.lever.co/octopus",
-"website": "https://jobs.lever.co",
-"countries": [
-"AU",
-"BG",
-"CA",
-"DK",
-"DE",
-"HU",
-"IL",
-"NL",
-"SG",
-"GB",
-"US"
-]
-},
-{
 "name": "Oliver Wyman",
 "platform": "lever",
 "slug": "oliverwyman",
@@ -11122,16 +10317,6 @@
 "slug": "pachama",
 "url": "https://jobs.lever.co/pachama",
 "website": "https://pachama.com/",
-"countries": [
-"US"
-]
-},
-{
-"name": "Paradoxum Games",
-"platform": "lever",
-"slug": "paradoxum-gg",
-"url": "https://jobs.lever.co/paradoxum-gg",
-"website": "https://paradoxum.gg/",
 "countries": [
 "US"
 ]
@@ -11194,43 +10379,12 @@
 ]
 },
 {
-"name": "PeopleFun",
-"platform": "lever",
-"slug": "peoplefun",
-"url": "https://jobs.lever.co/peoplefun",
-"website": "https://www.peoplefun.com/",
-"countries": [
-"US"
-]
-},
-{
 "name": "Pine games",
 "platform": "lever",
 "slug": "pinegames",
 "url": "https://jobs.lever.co/pinegames",
 "website": "https://pinegames.com",
 "countries": []
-},
-{
-"name": "Plaid",
-"platform": "lever",
-"slug": "plaid",
-"url": "https://jobs.lever.co/plaid",
-"website": "https://plaid.com",
-"countries": [
-"GB",
-"US"
-]
-},
-{
-"name": "PlayVS",
-"platform": "lever",
-"slug": "playvs",
-"url": "https://jobs.lever.co/playvs",
-"website": "http://www.playvs.com",
-"countries": [
-"US"
-]
 },
 {
 "name": "Poki",
@@ -11264,16 +10418,6 @@
 "slug": "ppfa",
 "url": "https://jobs.lever.co/ppfa",
 "website": "https://jobs.lever.co",
-"countries": [
-"US"
-]
-},
-{
-"name": "Proof of Play",
-"platform": "lever",
-"slug": "proofofplay",
-"url": "https://jobs.lever.co/proofofplay",
-"website": "https://www.proofofplay.com",
 "countries": [
 "US"
 ]
@@ -11436,16 +10580,6 @@
 "PL",
 "SG",
 "GB",
-"US"
-]
-},
-{
-"name": "Scope AR",
-"platform": "lever",
-"slug": "scopear",
-"url": "https://jobs.lever.co/scopear",
-"website": "http://scopear.com",
-"countries": [
 "US"
 ]
 },
@@ -11635,16 +10769,6 @@
 "countries": []
 },
 {
-"name": "Spruce Systems",
-"platform": "lever",
-"slug": "sprucesystems",
-"url": "https://jobs.lever.co/sprucesystems",
-"website": "https://jobs.lever.co",
-"countries": [
-"US"
-]
-},
-{
 "name": "Spyke Games",
 "platform": "lever",
 "slug": "spyke-games",
@@ -11652,18 +10776,6 @@
 "website": "https://www.linkedin.com/company/spyke-games/about/",
 "countries": [
 "TR"
-]
-},
-{
-"name": "Super.com",
-"platform": "lever",
-"slug": "super-com",
-"url": "https://jobs.lever.co/super-com",
-"website": "https://www.super.com/",
-"countries": [
-"CA",
-"GB",
-"US"
 ]
 },
 {
@@ -11722,34 +10834,12 @@
 "countries": []
 },
 {
-"name": "Threat connect",
-"platform": "lever",
-"slug": "threatconnect",
-"url": "https://jobs.lever.co/threatconnect/",
-"website": "https://jobs.lever.co",
-"countries": [
-"RO",
-"US"
-]
-},
-{
 "name": "Threat Tec",
 "platform": "lever",
 "slug": "threattec",
 "url": "https://jobs.lever.co/threattec",
 "website": "https://threattec.com",
 "countries": []
-},
-{
-"name": "Titmouse",
-"platform": "lever",
-"slug": "titmouse",
-"url": "https://jobs.lever.co/titmouse",
-"website": "http://www.titmouse.net",
-"countries": [
-"FR",
-"US"
-]
 },
 {
 "name": "Toku",
@@ -11789,16 +10879,6 @@
 "url": "https://jobs.lever.co/trendyol",
 "website": "https://jobs.lever.co",
 "countries": []
-},
-{
-"name": "Unknown Worlds",
-"platform": "lever",
-"slug": "unknownworlds",
-"url": "https://jobs.lever.co/unknownworlds",
-"website": "https://unknownworlds.com/",
-"countries": [
-"US"
-]
 },
 {
 "name": "Vendavo",
